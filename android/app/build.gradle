@@ -1,3 +1,12 @@
+buildscript {
+    ext.kotlin_version = '1.3.72'               // or latest
+    ext {
+        compileSdkVersion   = 33                // or higher / as desired
+        targetSdkVersion    = 33                // or higher / as desired
+        appCompatVersion    = "1.4.2"           // or higher / as desired
+    }
+}
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -65,3 +74,21 @@ flutter {
 }
 
 dependencies {}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+       // [required] background_fetch
+       maven { url "${project(':background_fetch').projectDir}/libs" }
+    }
+    configurations.all {
+      resolutionStrategy {
+        eachDependency {
+            if ((requested.group == "org.jetbrains.kotlin") && (requested.name.startsWith("kotlin-stdlib"))) {
+                useVersion("1.8.22")
+            }
+        }
+    }
+  }
+}

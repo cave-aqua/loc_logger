@@ -1,13 +1,12 @@
-import 'dart:ffi';
 import 'dart:ui';
 
 class Location {
   final String id;
   final String name;
-  final Float lat;
-  final Float long;
+  final double lat;
+  final double long;
   final Color color;
-  final Bool isHome;
+  final bool isHome;
 
   Location({
     required this.id,

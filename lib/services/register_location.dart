@@ -1,80 +1,113 @@
-import 'package:background_fetch/background_fetch.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:path_provider/path_provider.dart' as syspaths;
+import 'package:geolocator_android/geolocator_android.dart';
+import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
-import 'dart:math';
+import 'package:latlong2/latlong.dart';
+import 'package:geodesy/geodesy.dart' show Geodesy;
 
-Future<void> initPlatformState() async {
-  int status = await BackgroundFetch.configure(
-      BackgroundFetchConfig(
-        minimumFetchInterval: 15,
-        stopOnTerminate: false,
-        enableHeadless: true,
-        requiresBatteryNotLow: false,
-        requiresCharging: false,
-        requiresStorageNotLow: false,
-        requiresDeviceIdle: false,
-        requiredNetworkType: NetworkType.NONE,
-        startOnBoot: true,
-      ), (String taskId) async {
-    final dbPath = await sql.getDatabasesPath();
-    final db = await sql.openDatabase(path.join(dbPath, 'vistedLocations.db'),
-        version: 2);
-
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return;
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    Position userLoc = await Geolocator.getCurrentPosition();
-
-    String currentDay = DateTime.now().toString();
-
-    db.insert('vistedLocations', {
-      'id': const Uuid().v4(),
-      'dateVisited': currentDay.toString(),
-      'locationId': 'background_fetch_new'
-    });
-
-    db.close();
-    BackgroundFetch.finish(taskId);
-  });
-}
-
-getClosestLocation(Position userLocation) async {
-  double lat = userLocation.latitude;
-  double long = userLocation.longitude;
-  double searchAbleDegreesLong = convertMetersToDegreesBasedOnLong(200, long);
-  double searchAbleDegreesLat = convertMetersToDegreesBasedOnLat(200);
+Future<bool> registerLocation() async {
   final dbPath = await sql.getDatabasesPath();
   final db = await sql.openDatabase(path.join(dbPath, 'vistedLocations.db'),
       version: 2);
 
-  List result = await db.rawQuery(
-      'SELECT * FROM locations WHERE (6371000 * acos(cos(radians(lat)) * cos(radians(?)) * cos(radians(?) - radians(long)) + sin(radians(loc_lat)) * sin(radians(?)) ) <= :radius_meters',
-      [lat, long]);
-  if (result.isNotEmpty) {
-    return result.first;
+  db.insert('vistedLocations', {
+    'id': const Uuid().v4(),
+    'dateVisited': '2024-11-11',
+    'locationId': 'workmanager_test5',
+  });
+
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    GeolocatorAndroid.registerWith();
+  } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+    GeolocatorApple.registerWith();
   }
 
-  return null;
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return false;
+  }
+
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      return Future.error('Location permissions are denied');
+    }
+  }
+
+  db.insert('vistedLocations', {
+    'id': const Uuid().v4(),
+    'dateVisited': '2024-12-12',
+    'locationId': 'workmanager_test3',
+  });
+
+  Position userLoc = await Geolocator.getCurrentPosition();
+
+  await db.insert('vistedLocations', {
+    'id': const Uuid().v4(),
+    'dateVisited': '2024-11-11',
+    'locationId': 'workmanager_test2',
+  });
+
+  print('gone trough location');
+
+  await getClosestLocation(userLoc);
+
+  await db.insert('vistedLocations', {
+    'id': const Uuid().v4(),
+    'dateVisited': '2024-01-10',
+    'locationId': 'workmanager_test1',
+  });
+
+  return true;
 }
 
-double convertMetersToDegreesBasedOnLong(double meters, double longitude) {
-  double metersPerDegreeLon = 111320 * cos(longitude * pi / 180);
-  return meters / metersPerDegreeLon;
+Future<bool> getClosestLocation(Position userLocation) async {
+  double lat = userLocation.latitude;
+  double long = userLocation.longitude;
+
+  final dbPath = await sql.getDatabasesPath();
+  final db = await sql.openDatabase(path.join(dbPath, 'vistedLocations.db'),
+      version: 2);
+
+  List locations = await db.rawQuery('SELECT * FROM locations');
+  if (locations.isEmpty) {
+    return false;
+  }
+
+  Map<String, Map> computedLocations = {};
+  List<LatLng> latLongListLocations = [];
+
+  locations.forEach((location) {
+    double lat = location['lat'];
+    double long = location['long'];
+    computedLocations[createCoordsKey(lat, long)] = location;
+    latLongListLocations.add(LatLng(lat, long));
+  });
+
+  List<LatLng> result =
+      Geodesy().pointsInRange(LatLng(lat, long), latLongListLocations, 200);
+
+  Map? location = computedLocations[
+      createCoordsKey(result.first.latitude, result.first.longitude)];
+
+  if (location == null) {
+    return false;
+  }
+  String currentDay = DateTime.now().toString();
+
+  db.insert('vistedLocations', {
+    'id': const Uuid().v4(),
+    'dateVisited': currentDay,
+    'locationId': location['id'],
+  });
+
+  return true;
 }
 
-double convertMetersToDegreesBasedOnLat(double meters) {
-  return meters / 111320;
+String createCoordsKey(double latitude, double longitude) {
+  return const Uuid().v5(Uuid.NAMESPACE_NIL, "$latitude$longitude");
 }
