@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DayView extends StatelessWidget {
@@ -8,6 +7,19 @@ class DayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return InkWell(
+      onTap: () {
+        //TODO: Should open view about the day.
+        //TODO: retrieve data to know where the user has been.
+      },
+      child: Container(
+        width: 40,
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        child: Center(
+          child: Text(date.day.toString()),
+        ),
+      ),
+    );
   }
 }

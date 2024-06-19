@@ -182,39 +182,9 @@ class _MainAppState extends State<MainApp> {
       activeBody = const Center(child: Text('No items found'));
     }
 
-    if (visitedLocations != null && visitedLocations!.isNotEmpty) {
-      activeBody = Center(
-        child: SizedBox(
-          height: 300,
-          width: double.infinity,
-          child: ListView.builder(
-            itemCount: formattedVisitedLocations.length,
-            itemBuilder: (context, index) {
-              VistedLocation currentLocation = formattedVisitedLocations[index];
-              DateTime? date = currentLocation.getDate();
-              String? getFormattedDate = currentLocation.getFormattedDate();
-
-              if (date != null) {
-                if (getFormattedDate != null) {
-                  return Row(
-                    children: [
-                      SizedBox(
-                        height: 30,
-                        child: Text(getFormattedDate),
-                      ),
-                    ],
-                  );
-                }
-              }
-            },
-          ),
-        ),
-      );
-    }
-
     return const MaterialApp(
       home: Scaffold(
-        body: CalenderView(),
+        body: Center(child: CalenderView()),
       ),
     );
   }
