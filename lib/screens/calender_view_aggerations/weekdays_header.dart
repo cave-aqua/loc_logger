@@ -6,7 +6,7 @@ class WeekDaysHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         DayHeaderHolder(dayString: "Mon"),
         DayHeaderHolder(dayString: "Tue"),

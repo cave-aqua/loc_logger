@@ -182,9 +182,12 @@ class _MainAppState extends State<MainApp> {
       activeBody = const Center(child: Text('No items found'));
     }
 
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
-        body: Center(child: CalenderView()),
+        body: Center(
+            child: CalenderView(
+          givenDate: DateTime.now(),
+        )),
       ),
     );
   }

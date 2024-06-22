@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:loc_logger/screens/calender_view_aggerations/day_view.dart';
+import 'package:loc_logger/screens/calender_view_aggerations/month_switcher.dart';
+import 'package:loc_logger/screens/calender_view_aggerations/week_view.dart';
 import 'package:loc_logger/screens/calender_view_aggerations/weekdays_header.dart';
 
 class CalenderView extends StatelessWidget {
-  const CalenderView({super.key});
+  final DateTime givenDate;
+
+  const CalenderView({super.key, required this.givenDate});
 
   @override
   Widget build(BuildContext context) {
-    int month = DateTime.now().month;
-    int year = DateTime.now().year;
-    int lastDayOfMonth = DateTime(year, month, 0).day;
-    int weekDay = DateTime(year, month, 1).weekday;
-    int toBeRetractedWeekDay = weekDay == 1 ? weekDay : weekDay - weekDay--;
-
-    // List<Row> weeks = buildCalenderMonth(DateTime.now());
-    List<Row> weeks = buildCalenderMonth(DateTime(2024, 2, 6));
+    List<WeekView> weeks = buildCalenderMonth(givenDate);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [const WeekDaysHeader(), ...weeks],
+      children: [
+        MonthSwitcher(currentDate: givenDate),
+        const WeekDaysHeader(),
+        ...weeks
+      ],
     );
   }
 
-  List<Row> buildCalenderMonth(DateTime chosenDate) {
+  List<WeekView> buildCalenderMonth(DateTime chosenDate) {
     int month = chosenDate.month;
     int year = chosenDate.year;
 
@@ -38,7 +39,7 @@ class CalenderView extends StatelessWidget {
     DateTime dayPointer = firstDayOfTheMonth;
     List<List<DayView>> days = [];
 
-    List<Row> weeks = [];
+    List<WeekView> weeks = [];
 
     if (toBeRetractedWeekDay > 0) {
       List<DayView> offSetWeek = [];
@@ -59,16 +60,14 @@ class CalenderView extends StatelessWidget {
 
     while (dayPointer.month == month) {
       if (dayPointer.day == lastDayOfTheMonth.day) {
-        weeks.add(Row(
-          mainAxisSize: MainAxisSize.min,
+        weeks.add(WeekView(
           children: days[startCounter],
         ));
       }
 
       //We go to next week
       if (days[startCounter].length == DateTime.daysPerWeek) {
-        weeks.add(Row(
-          mainAxisSize: MainAxisSize.min,
+        weeks.add(WeekView(
           children: days[startCounter],
         ));
         startCounter++;
