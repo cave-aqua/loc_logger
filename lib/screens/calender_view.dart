@@ -4,21 +4,30 @@ import 'package:loc_logger/screens/calender_view_aggerations/month_switcher.dart
 import 'package:loc_logger/screens/calender_view_aggerations/week_view.dart';
 import 'package:loc_logger/screens/calender_view_aggerations/weekdays_header.dart';
 
-class CalenderView extends StatelessWidget {
-  final DateTime givenDate;
+class CalenderView extends StatefulWidget {
+  DateTime givenDate;
 
-  const CalenderView({super.key, required this.givenDate});
+  CalenderView({super.key, required this.givenDate});
 
   @override
+  State<CalenderView> createState() => _CalenderViewState();
+}
+
+class _CalenderViewState extends State<CalenderView> {
+  @override
   Widget build(BuildContext context) {
-    List<WeekView> weeks = buildCalenderMonth(givenDate);
+    List<WeekView> weeks = buildCalenderMonth(widget.givenDate);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MonthSwitcher(currentDate: givenDate),
+        MonthSwitcher(
+          currentDate: widget.givenDate,
+          incrementMonth: incrementMonth,
+          decrementMonth: decrementMonth,
+        ),
         const WeekDaysHeader(),
         ...weeks
       ],
@@ -84,5 +93,19 @@ class CalenderView extends StatelessWidget {
     }
 
     return weeks;
+  }
+
+  void incrementMonth() {
+    setState(() {
+      widget.givenDate = DateTime(widget.givenDate.year,
+          widget.givenDate.month + 1, widget.givenDate.day);
+    });
+  }
+
+  void decrementMonth() {
+    setState(() {
+      widget.givenDate = DateTime(widget.givenDate.year,
+          widget.givenDate.month - 1, widget.givenDate.day);
+    });
   }
 }

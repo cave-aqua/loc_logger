@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
-class MonthSwitcher extends StatefulWidget {
+class MonthSwitcher extends StatelessWidget {
+  final void Function() incrementMonth;
+  final void Function() decrementMonth;
   final DateTime currentDate;
 
-  const MonthSwitcher({super.key, required this.currentDate});
+  MonthSwitcher({
+    super.key,
+    required this.currentDate,
+    required this.incrementMonth,
+    required this.decrementMonth,
+  });
 
-  @override
-  State<MonthSwitcher> createState() => _MonthSwitcherState();
-}
-
-class _MonthSwitcherState extends State<MonthSwitcher> {
   List<String> months = [
     'January',
     'February',
@@ -32,17 +34,10 @@ class _MonthSwitcherState extends State<MonthSwitcher> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-            onPressed: () {
-              // TODO: substract a month
-            },
-            icon: const Icon(Icons.arrow_back)),
-        Text(
-            '${months[widget.currentDate.month - 1]} ${widget.currentDate.year}'),
+            onPressed: decrementMonth, icon: const Icon(Icons.arrow_back)),
+        Text('${months[currentDate.month - 1]} ${currentDate.year}'),
         IconButton(
-            onPressed: () {
-              // TODO: Add a month
-            },
-            icon: const Icon(Icons.arrow_forward)),
+            onPressed: incrementMonth, icon: const Icon(Icons.arrow_forward)),
       ],
     );
   }
