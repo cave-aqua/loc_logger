@@ -60,17 +60,12 @@ class _CalenderViewState extends State<CalenderView> {
       );
     }
 
+    //We set a empty days if the first day of the month is not the first day of the week.
     if (toBeRetractedWeekDay > 0) {
       List<Widget> offSetWeek = [];
 
       for (var i = 0; i < toBeRetractedWeekDay; i++) {
-        offSetWeek.add(
-            // DayView(
-            //   firstDayOfTheMonth.subtract(
-            //     Duration(days: toBeRetractedWeekDay - i),
-            //   ),
-            // ),
-            EmptyDayView());
+        offSetWeek.add(const EmptyDayView());
       }
       days.add(offSetWeek);
     } else {
