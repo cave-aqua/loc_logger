@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:loc_logger/screens/calender_view_aggerations/week_view.dart';
 
 class WeekDaysHeader extends StatelessWidget {
   const WeekDaysHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return const WeekView(
       children: [
         DayHeaderHolder(dayString: "Mon"),
         DayHeaderHolder(dayString: "Tue"),

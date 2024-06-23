@@ -46,21 +46,31 @@ class _CalenderViewState extends State<CalenderView> {
 
     int startCounter = 0;
     DateTime dayPointer = firstDayOfTheMonth;
-    List<List<DayView>> days = [];
+    List<List<Widget>> days = [];
 
     List<WeekView> weeks = [];
 
+    void addDayToPointer() {
+      days[startCounter].add(
+        DayView(dayPointer),
+      );
+
+      dayPointer = dayPointer.add(
+        const Duration(days: 1),
+      );
+    }
+
     if (toBeRetractedWeekDay > 0) {
-      List<DayView> offSetWeek = [];
+      List<Widget> offSetWeek = [];
 
       for (var i = 0; i < toBeRetractedWeekDay; i++) {
         offSetWeek.add(
-          DayView(
-            firstDayOfTheMonth.subtract(
-              Duration(days: toBeRetractedWeekDay - i),
-            ),
-          ),
-        );
+            // DayView(
+            //   firstDayOfTheMonth.subtract(
+            //     Duration(days: toBeRetractedWeekDay - i),
+            //   ),
+            // ),
+            EmptyDayView());
       }
       days.add(offSetWeek);
     } else {
@@ -69,10 +79,28 @@ class _CalenderViewState extends State<CalenderView> {
 
     while (dayPointer.month == month) {
       if (dayPointer.day == lastDayOfTheMonth.day) {
+        if (days[startCounter].length < 7) {
+          addDayToPointer();
+        }
+
+        int lastWeekLength = days[startCounter].length;
+
+        if (lastWeekLength < DateTime.daysPerWeek) {
+          for (var i = 0; i < DateTime.daysPerWeek - lastWeekLength; i++) {
+            days[startCounter].add(
+              const EmptyDayView(),
+            );
+          }
+        }
+
         weeks.add(WeekView(
           children: days[startCounter],
         ));
+
+        break;
       }
+
+      addDayToPointer();
 
       //We go to next week
       if (days[startCounter].length == DateTime.daysPerWeek) {
@@ -82,14 +110,6 @@ class _CalenderViewState extends State<CalenderView> {
         startCounter++;
         days.add([]);
       }
-
-      days[startCounter].add(
-        DayView(dayPointer),
-      );
-
-      dayPointer = dayPointer.add(
-        const Duration(days: 1),
-      );
     }
 
     return weeks;

@@ -8,10 +8,7 @@ class DayView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        //TODO: Should open view about the day.
-        //TODO: retrieve data to know where the user has been.
-      },
+      onTap: () {},
       child: Container(
         width: 40,
         padding: const EdgeInsets.all(10),
@@ -20,6 +17,17 @@ class DayView extends StatelessWidget {
           child: Text(date.day.toString()),
         ),
       ),
+    );
+  }
+}
+
+class EmptyDayView extends StatelessWidget {
+  const EmptyDayView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 46,
     );
   }
 }
