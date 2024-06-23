@@ -4,6 +4,7 @@ import 'package:loc_logger/screens/calender_view_aggerations/month_switcher.dart
 import 'package:loc_logger/screens/calender_view_aggerations/week_view.dart';
 import 'package:loc_logger/screens/calender_view_aggerations/weekdays_header.dart';
 
+// ignore: must_be_immutable
 class CalenderView extends StatefulWidget {
   DateTime givenDate;
 

@@ -29,7 +29,6 @@ class DayHeaderHolder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 40,
-      // padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(horizontal: 3),
       child: Center(
         child: Text(
