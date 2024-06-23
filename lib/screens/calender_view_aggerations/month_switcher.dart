@@ -12,7 +12,7 @@ class MonthSwitcher extends StatelessWidget {
     required this.decrementMonth,
   });
 
-  List<String> months = [
+  final List<String> months = [
     'January',
     'February',
     'March',
