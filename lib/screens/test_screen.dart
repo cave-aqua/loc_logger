@@ -16,13 +16,20 @@ import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:geodesy/geodesy.dart' show Geodesy;
 
-class TestScreen extends StatelessWidget {
-  List? visitedLocations;
-  List? locations;
-  List<Location> formattedLocations = [];
-  List<VistedLocation> formattedVisitedLocations = [];
+class TestScreen extends StatefulWidget {
+  const TestScreen({super.key});
 
-  TestScreen({super.key, this.visitedLocations});
+  @override
+  State<TestScreen> createState() => _TestScreenState();
+}
+
+class _TestScreenState extends State<TestScreen> {
+  List? locations;
+  List? visitedLocations;
+
+  List<Location> formattedLocations = [];
+
+  List<VistedLocation> formattedVisitedLocations = [];
 
   Future<void> _getDatabase() async {
     final dbPath = await sql.getDatabasesPath();
@@ -34,8 +41,10 @@ class TestScreen extends StatelessWidget {
       await db.execute(
           'CREATE TABLE IF NOT EXISTS vistedLocations (id TEXT PRIMARY KEY, dateVisited DATETIME, locationId TEXT, FOREIGN KEY (locationId) REFERENCES locations(id))');
     }, version: 2);
-    visitedLocations = await dbNew.query('vistedLocations');
     locations = await dbNew.query('locations');
+    visitedLocations = await dbNew.query('vistedLocations');
+
+    setState(() {});
 
     if (visitedLocations != null && locations != null) {
       if (visitedLocations!.isNotEmpty && locations!.isNotEmpty) {
@@ -133,8 +142,6 @@ class TestScreen extends StatelessWidget {
               // });
 
               registerLocation();
-
-              print('created');
             },
             child: const Text('Add new record')),
         ElevatedButton(
