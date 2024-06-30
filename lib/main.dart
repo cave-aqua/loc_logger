@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:loc_logger/models/location.dart';
-import 'package:loc_logger/screens/calender_view.dart';
+import 'package:loc_logger/widgets/calender_view.dart';
+import 'package:loc_logger/widgets/main_drawer.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:loc_logger/models/visited_location.dart';
 import 'package:loc_logger/services/register_location.dart';
@@ -184,6 +185,12 @@ class _MainAppState extends State<MainApp> {
 
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.amber,
+          title: const Text('Text'),
+          actions: [],
+        ),
+        drawer: MainDrawer(),
         body: Center(
             child: CalenderView(
           givenDate: DateTime.now(),
