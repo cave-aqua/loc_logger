@@ -33,7 +33,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.loc_logger"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {

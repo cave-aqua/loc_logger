@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/widgets/calender_view.dart';
 import 'package:loc_logger/widgets/main_drawer.dart';
@@ -24,11 +25,10 @@ const String registerLocationKey = 'periodic-visited-location-register';
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
     DartPluginRegistrant.ensureInitialized();
-    String currentDay = DateTime.now().toString();
 
     final dbPath = await sql.getDatabasesPath();
     final db = await sql.openDatabase(path.join(dbPath, 'vistedLocations.db'),
-        version: 2);
+        version: 1);
 
     if (defaultTargetPlatform == TargetPlatform.android) {
       GeolocatorAndroid.registerWith();
@@ -79,11 +79,11 @@ void callbackDispatcher() {
       return false;
     }
 
-    await db.insert('vistedLocations', {
-      'id': const Uuid().v4(),
-      'dateVisited': currentDay,
-      'locationId': location['id'],
-    });
+    // await db.insert('vistedLocations', {
+    //   'id': const Uuid().v4(),
+    //   'dateVisited': currentDay,
+    //   'locationId': location['id'],
+    // });
 
     return Future.value(true);
   });
@@ -110,7 +110,11 @@ void main() {
       requiresStorageNotLow: false,
     ),
   );
-  runApp(const MainApp());
+  runApp(
+    const ProviderScope(
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatefulWidget {
@@ -127,52 +131,51 @@ class _MainAppState extends State<MainApp> {
   List<VistedLocation> formattedVisitedLocations = [];
   List<Location> formattedLocations = [];
 
-  Future<void> _getDatabase() async {
-    final dbPath = await sql.getDatabasesPath();
-    Database dbNew = await sql.openDatabase(
-        path.join(dbPath, 'vistedLocations.db'), onCreate: (db, version) async {
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, address TEXT, lat REAL, long REAL)');
+  // Future<void> _getDatabase() async {
+  //   final dbPath = await sql.getDatabasesPath();
+  //   Database dbNew = await sql.openDatabase(
+  //       path.join(dbPath, 'vistedLocations.db'), onCreate: (db, version) async {
+  //     await db.execute(
+  //         'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, address TEXT, lat REAL, long REAL)');
 
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS vistedLocations (id TEXT PRIMARY KEY, dateVisited DATETIME, locationId TEXT, FOREIGN KEY (locationId) REFERENCES locations(id))');
-    }, version: 2);
-    visitedLocations = await dbNew.query('vistedLocations');
-    locations = await dbNew.query('locations');
+  //     await db.execute(
+  //         'CREATE TABLE IF NOT EXISTS vistedLocations (id TEXT PRIMARY KEY, dateVisited DATETIME, locationId TEXT, FOREIGN KEY (locationId) REFERENCES locations(id))');
+  //   }, version: 1);
+  //   visitedLocations = await dbNew.query('vistedLocations');
+  //   locations = await dbNew.query('locations');
 
-    if (visitedLocations != null && locations != null) {
-      if (visitedLocations!.isNotEmpty && locations!.isNotEmpty) {
-        formattedVisitedLocations.clear();
-        for (var vistetedLocation in visitedLocations!) {
-          formattedVisitedLocations.add(VistedLocation(
-              id: vistetedLocation['id'],
-              dateTime: vistetedLocation['dateVisited'],
-              locationId: vistetedLocation['locationId']));
-        }
+  //   if (visitedLocations != null && locations != null) {
+  //     if (visitedLocations!.isNotEmpty && locations!.isNotEmpty) {
+  //       formattedVisitedLocations.clear();
+  //       for (var vistetedLocation in visitedLocations!) {
+  //         formattedVisitedLocations.add(VistedLocation(
+  //             id: vistetedLocation['id'],
+  //             dateTime: vistetedLocation['dateVisited'],
+  //             locationId: vistetedLocation['locationId']));
+  //       }
 
-        for (var location in locations!) {
-          formattedLocations.add(
-            Location(
-                id: location['id'],
-                name: location['name'],
-                lat: location['lat'],
-                long: location['long'],
-                color: Colors.black,
-                isHome: true),
-          );
-        }
-      }
-    }
+  //       for (var location in locations!) {
+  //         formattedLocations.add(
+  //           Location(
+  //               id: location['id'],
+  //               name: location['name'],
+  //               lat: location['lat'],
+  //               long: location['long'],
+  //               color: Colors.black,
+  //               isHome: true),
+  //         );
+  //       }
+  //     }
+  //   }
 
-    setState(() {
-      databaseLocs = dbNew;
-    });
-  }
+  //   setState(() {
+  //     databaseLocs = dbNew;
+  //   });
+  // }
 
   @override
   void initState() {
     super.initState();
-    _getDatabase();
   }
 
   @override
@@ -190,7 +193,7 @@ class _MainAppState extends State<MainApp> {
           title: const Text('Text'),
           actions: [],
         ),
-        drawer: MainDrawer(),
+        drawer: const MainDrawer(),
         body: Center(
             child: CalenderView(
           givenDate: DateTime.now(),

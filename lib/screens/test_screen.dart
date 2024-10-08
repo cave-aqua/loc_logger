@@ -31,45 +31,45 @@ class _TestScreenState extends State<TestScreen> {
 
   List<VistedLocation> formattedVisitedLocations = [];
 
-  Future<void> _getDatabase() async {
-    final dbPath = await sql.getDatabasesPath();
-    Database dbNew = await sql.openDatabase(
-        path.join(dbPath, 'vistedLocations.db'), onCreate: (db, version) async {
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, address TEXT, lat REAL, long REAL)');
+  // Future<void> _getDatabase() async {
+  //   final dbPath = await sql.getDatabasesPath();
+  //   Database dbNew = await sql.openDatabase(
+  //       path.join(dbPath, 'vistedLocations.db'), onCreate: (db, version) async {
+  //     // await db.execute(
+  //     //     'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, address TEXT, lat REAL, long REAL)');
 
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS vistedLocations (id TEXT PRIMARY KEY, dateVisited DATETIME, locationId TEXT, FOREIGN KEY (locationId) REFERENCES locations(id))');
-    }, version: 2);
-    locations = await dbNew.query('locations');
-    visitedLocations = await dbNew.query('vistedLocations');
+  //     await db.execute(
+  //         'CREATE TABLE IF NOT EXISTS vistedLocations (id TEXT PRIMARY KEY, dateVisited DATETIME, locationId TEXT, FOREIGN KEY (locationId) REFERENCES locations(id))');
+  //   }, version: 2);
+  //   locations = await dbNew.query('locations');
+  //   visitedLocations = await dbNew.query('vistedLocations');
 
-    setState(() {});
+  //   setState(() {});
 
-    if (visitedLocations != null && locations != null) {
-      if (visitedLocations!.isNotEmpty && locations!.isNotEmpty) {
-        formattedVisitedLocations.clear();
-        for (var vistetedLocation in visitedLocations!) {
-          formattedVisitedLocations.add(VistedLocation(
-              id: vistetedLocation['id'],
-              dateTime: vistetedLocation['dateVisited'],
-              locationId: vistetedLocation['locationId']));
-        }
+  //   if (visitedLocations != null && locations != null) {
+  //     if (visitedLocations!.isNotEmpty && locations!.isNotEmpty) {
+  //       formattedVisitedLocations.clear();
+  //       for (var vistetedLocation in visitedLocations!) {
+  //         formattedVisitedLocations.add(VistedLocation(
+  //             id: vistetedLocation['id'],
+  //             dateTime: vistetedLocation['dateVisited'],
+  //             locationId: vistetedLocation['locationId']));
+  //       }
 
-        for (var location in locations!) {
-          formattedLocations.add(
-            Location(
-                id: location['id'],
-                name: location['name'],
-                lat: location['lat'],
-                long: location['long'],
-                color: Colors.black,
-                isHome: true),
-          );
-        }
-      }
-    }
-  }
+  //       for (var location in locations!) {
+  //         formattedLocations.add(
+  //           Location(
+  //               id: location['id'],
+  //               name: location['name'],
+  //               lat: location['lat'],
+  //               long: location['long'],
+  //               color: Colors.black,
+  //               isHome: true),
+  //         );
+  //       }
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -113,49 +113,52 @@ class _TestScreenState extends State<TestScreen> {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        activeBody,
-        ElevatedButton(
-          onPressed: () {
-            _getDatabase();
-            print(locations);
-            print(formattedVisitedLocations);
-          },
-          child: const Text('Refresh'),
-        ),
-        ElevatedButton(
-            onPressed: () async {
-              // final dbPath = await sql.getDatabasesPath();
-              // final db = await sql.openDatabase(
-              //     path.join(dbPath, 'vistedLocations.db'),
-              //     version: 2);
-              // await db.insert('locations', {
-              //   'id': Uuid().v4(),
-              //   'name': 'Home',
-              //   'address': '',
-              //   'lat': 51.9592,
-              //   'long': 5.2236,
-              // });
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          activeBody,
+          ElevatedButton(
+            onPressed: () {
+              // _getDatabase();
+              print(locations);
+              print(formattedVisitedLocations);
+              print(visitedLocations);
+            },
+            child: const Text('Refresh'),
+          ),
+          ElevatedButton(
+              onPressed: () async {
+                final dbPath = await sql.getDatabasesPath();
+                final db = await sql.openDatabase(
+                    path.join(dbPath, 'vistedLocations.db'),
+                    version: 2);
+                await db.insert('locations', {
+                  'id': Uuid().v4(),
+                  'name': 'Home',
+                  'address': '',
+                  'lat': 51.9592,
+                  'long': 5.2236,
+                });
 
-              registerLocation();
-            },
-            child: const Text('Add new record')),
-        ElevatedButton(
-            onPressed: () async {
-              final dbPath = await sql.getDatabasesPath();
-              final db = await sql.openDatabase(
-                  path.join(dbPath, 'vistedLocations.db'),
-                  version: 2);
-              formattedVisitedLocations.clear();
-              db.rawDelete('DELETE FROM vistedLocations');
-              // db.rawDelete('DELETE FROM locations');
-            },
-            child: const Text('Empty data'))
-      ],
+                registerLocation();
+              },
+              child: const Text('Add new record')),
+          ElevatedButton(
+              onPressed: () async {
+                final dbPath = await sql.getDatabasesPath();
+                final db = await sql.openDatabase(
+                    path.join(dbPath, 'vistedLocations.db'),
+                    version: 2);
+                formattedVisitedLocations.clear();
+                db.rawDelete('DELETE FROM vistedLocations');
+                // db.rawDelete('DELETE FROM locations');
+              },
+              child: const Text('Empty data'))
+        ],
+      ),
     );
   }
 }
