@@ -6,6 +6,7 @@ import 'package:geodesy/geodesy.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/providers/location_notifier.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_picker.dart';
+import 'package:loc_logger/screens/locations/aggregations/location_preview.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart' as sql;
@@ -28,12 +29,18 @@ class _AddLocationState extends ConsumerState<AddLocation> {
   LatLng? coords;
   Color pickedColor =
       Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
+  late LocationPreviewWidget pickLoc;
 
   @override
   void dispose() {
     // Need to make sure that the controllers are killed when we are done.
     nameController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   void _savePlace() async {
@@ -96,6 +103,12 @@ class _AddLocationState extends ConsumerState<AddLocation> {
               const SizedBox(
                 height: 20,
               ),
+              if (coords != null)
+                SizedBox(
+                    height: 180, child: LocationPreviewWidget(coords: coords!)),
+              const SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -109,6 +122,7 @@ class _AddLocationState extends ConsumerState<AddLocation> {
                             MaterialPageRoute(
                               builder: (context) => const LocationPicker(),
                             ));
+                        setState(() {});
                       },
                       icon: const Icon(Icons.add_location)),
                 ],

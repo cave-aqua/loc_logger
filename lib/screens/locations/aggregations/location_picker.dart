@@ -30,6 +30,7 @@ class _LocationPickerState extends State<LocationPicker> {
                     LatLng(snapshot.data!.latitude, snapshot.data!.longitude),
                 onLongPress: (tapPosition, point) {
                   Navigator.pop(context, point);
+                  setState(() {});
                 },
               ),
               children: [

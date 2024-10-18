@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/providers/location_notifier.dart';
 import 'package:loc_logger/screens/locations/add_location.dart';
+import 'package:loc_logger/screens/locations/aggregations/location_list_item.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart' as sql;
@@ -21,21 +22,6 @@ class _LocationsOverviewState extends ConsumerState<LocationsOverview> {
     // Call the loadLocations method to fetch data from the database
     Future.microtask(() => ref.read(locationProvider.notifier).loadLocations());
   }
-
-  // Future<List> _getLocations() async {
-  //   final dbPath = await sql.getDatabasesPath();
-  //   Database db = await sql
-  //       .openDatabase(path.join(dbPath, 'vistedLocations.db'), version: 2,
-  //           onCreate: (db, version) async {
-  //     await db.execute(
-  //         'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, lat REAL, long REAL, color TEXT, is_home INTEGER)');
-  //   }, onUpgrade: (db, oldVersion, newVersion) async {
-  //     await db.execute(
-  //         'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, lat REAL, long REAL, color TEXT, is_home INTEGER)');
-  //   });
-
-  //   return await db.query('locations');
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +48,14 @@ class _LocationsOverviewState extends ConsumerState<LocationsOverview> {
         itemBuilder: (context, index) {
           //TODO: replace with list Item
           return Row(
-            children: [Text(locations[index].name)],
+            children: [
+              ListItemWidget(
+                  removeLocation: (locationId) => ref
+                      .read(locationProvider.notifier)
+                      .removeLocation(locations[index].id),
+                  location: locations[index])
+            ],
+            // children: [Text(locations[index].name)],
           );
         },
       ),
