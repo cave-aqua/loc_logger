@@ -19,9 +19,13 @@ class ListItemWidget extends StatelessWidget {
         key: Key(location.id),
         onDismissed: (direction) => removeLocation(location.id),
         child: Container(
-          margin: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          margin: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            border: Border.all(width: 1),
+            gradient: LinearGradient(
+              colors: [Colors.white, location.color],
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
           ),
           height: 90,
           child: Row(
@@ -31,7 +35,10 @@ class ListItemWidget extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleLarge),
               if (location.isHome)
                 const SizedBox(
-                  child: Icon(Icons.home),
+                  child: Icon(
+                    Icons.home,
+                    color: Colors.white,
+                  ),
                 )
             ],
           ),

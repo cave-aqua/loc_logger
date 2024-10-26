@@ -46,7 +46,7 @@ class _LocationsOverviewState extends ConsumerState<LocationsOverview> {
       body: ListView.builder(
         itemCount: locations.length,
         itemBuilder: (context, index) {
-          //TODO: replace with list Item
+          print(locations[index].color.value);
           return Row(
             children: [
               ListItemWidget(
@@ -55,7 +55,6 @@ class _LocationsOverviewState extends ConsumerState<LocationsOverview> {
                       .removeLocation(locations[index].id),
                   location: locations[index])
             ],
-            // children: [Text(locations[index].name)],
           );
         },
       ),

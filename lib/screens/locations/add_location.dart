@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
 import 'package:geodesy/geodesy.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/providers/location_notifier.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_picker.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_preview.dart';
+import 'package:loc_logger/services/get_global_device_status.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart' as sql;
@@ -113,18 +115,38 @@ class _AddLocationState extends ConsumerState<AddLocation> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 2),
-                      onPressed: () async {
-                        coords = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LocationPicker(),
-                            ));
-                        setState(() {});
-                      },
-                      icon: const Icon(Icons.add_location)),
+                  Flexible(
+                    flex: 9,
+                    fit: FlexFit.tight,
+                    child: IconButton(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 2),
+                        onPressed: () async {
+                          coords = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LocationPicker(),
+                              ));
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.add_location)),
+                  ),
+                  Flexible(
+                      flex: 3,
+                      fit: FlexFit.tight,
+                      child: IconButton(
+                        icon: const Icon(Icons.gps_fixed),
+                        onPressed: () async {
+                          Position? pos = await getGlobalDeviceStatus();
+                          if (pos == null) {
+                            return;
+                          }
+
+                          setState(() {
+                            coords = LatLng(pos.latitude, pos.longitude);
+                          });
+                        },
+                      ))
                 ],
               ),
               const SizedBox(
@@ -135,14 +157,12 @@ class _AddLocationState extends ConsumerState<AddLocation> {
                 children: [
                   const Text('Is this location home?'),
                   SizedBox(
-                    width: 20,
                     height: 20,
-                    child: Checkbox(
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    child: Switch(
                       value: isHome,
                       onChanged: (value) {
                         setState(() {
-                          isHome = value!;
+                          isHome = value;
                         });
                       },
                     ),
@@ -151,8 +171,13 @@ class _AddLocationState extends ConsumerState<AddLocation> {
               ),
               const SizedBox(height: 20),
               ColorPicker(
-                onColorChanged: (pickedColor) {
-                  pickedColor = pickedColor;
+                color: pickedColor,
+                enableShadesSelection: false,
+                title: const Text('Pick a color for your location'),
+                enableTonalPalette: false,
+                enableOpacity: false,
+                onColorChanged: (choosenColor) {
+                  pickedColor = choosenColor.withOpacity(1);
                 },
               ),
               const SizedBox(height: 20),

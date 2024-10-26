@@ -19,9 +19,7 @@ class LocationNotifier extends StateNotifier<List<Location>> {
         name: location['name'],
         lat: location['lat'],
         long: location['long'],
-        // color: Color(int.parse(location['color'].substring(1, 7), radix: 16) +
-        //     0xFF000000),
-        color: Colors.black,
+        color: Color(int.parse(location['color'])).withOpacity(1),
         isHome: location['is_home'] == 1, // Handle bool conversion
       ));
     }
@@ -36,7 +34,7 @@ class LocationNotifier extends StateNotifier<List<Location>> {
       'name': location.name,
       'lat': location.lat,
       'long': location.long,
-      'color': '#${location.color.value.toRadixString(16).substring(2)}',
+      'color': location.color.value,
       'is_home': location.isHome,
     });
 
