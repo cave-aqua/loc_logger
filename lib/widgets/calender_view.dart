@@ -45,20 +45,24 @@ class _CalenderViewState extends State<CalenderView> {
     int weekDay = DateTime(year, month, 1).weekday;
     int toBeRetractedWeekDay = weekDay - 1;
 
-    int startCounter = 0;
+    int weekCounter = 0;
     DateTime dayPointer = firstDayOfTheMonth;
-    List<List<Widget>> days = [];
+    List<List<Widget>> daysOfTheMonth = [];
 
     List<WeekView> weeks = [];
 
     void addDayToPointer() {
-      days[startCounter].add(
+      daysOfTheMonth[weekCounter].add(
         DayView(dayPointer),
       );
 
       dayPointer = dayPointer.add(
         const Duration(days: 1),
       );
+      //Check for when winter time gets implemented we need to add one hour to get the following day
+      if (dayPointer.hour == 23) {
+        dayPointer = dayPointer.add(const Duration(hours: 2));
+      }
     }
 
     //We set a empty days if the first day of the month is not the first day of the week.
@@ -68,43 +72,47 @@ class _CalenderViewState extends State<CalenderView> {
       for (var i = 0; i < toBeRetractedWeekDay; i++) {
         offSetWeek.add(const EmptyDayView());
       }
-      days.add(offSetWeek);
+      daysOfTheMonth.add(offSetWeek);
     } else {
-      days.add([]);
+      daysOfTheMonth.add([]);
     }
 
     while (dayPointer.month == month) {
       if (dayPointer.day == lastDayOfTheMonth.day) {
-        if (days[startCounter].length < 7) {
+        if (daysOfTheMonth[weekCounter].length < DateTime.daysPerWeek) {
           addDayToPointer();
+          // print('80 $dayPointer');
         }
 
-        int lastWeekLength = days[startCounter].length;
+        int lastWeekLength = daysOfTheMonth[weekCounter].length;
 
         if (lastWeekLength < DateTime.daysPerWeek) {
           for (var i = 0; i < DateTime.daysPerWeek - lastWeekLength; i++) {
-            days[startCounter].add(
+            daysOfTheMonth[weekCounter].add(
               const EmptyDayView(),
             );
           }
         }
 
         weeks.add(WeekView(
-          children: days[startCounter],
+          children: daysOfTheMonth[weekCounter],
         ));
 
         break;
       }
 
+      //TODO: Take in account daylight savings
+
       addDayToPointer();
+      // print('101 $dayPointer');
 
       //We go to next week
-      if (days[startCounter].length == DateTime.daysPerWeek) {
+      if (daysOfTheMonth[weekCounter].length == DateTime.daysPerWeek) {
         weeks.add(WeekView(
-          children: days[startCounter],
+          children: daysOfTheMonth[weekCounter],
         ));
-        startCounter++;
-        days.add([]);
+        weekCounter++;
+        daysOfTheMonth.add([]);
       }
     }
 
