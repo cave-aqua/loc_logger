@@ -41,6 +41,25 @@ class LocationNotifier extends StateNotifier<List<Location>> {
     state = [location, ...state];
   }
 
+  void updateLocation(Location location) async {
+    Database db = await _getDatabaseLocations();
+    db.update(
+      'locations',
+      {
+        'name': location.name,
+        'lat': location.lat,
+        'long': location.long,
+        'color': location.color.value,
+        'is_home': location.isHome,
+      },
+      where: 'id = ?',
+      whereArgs: [location.id],
+    );
+
+    state.removeWhere((element) => element.id == location.id);
+    state = [location, ...state];
+  }
+
   void removeLocation(String locationId) async {
     Database db = await _getDatabaseLocations();
     db.delete('locations', where: 'id = ?', whereArgs: [locationId]);
