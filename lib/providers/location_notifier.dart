@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/models/location.dart';
+import 'package:loc_logger/services/init_database.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart' as sql;
@@ -10,8 +11,8 @@ class LocationNotifier extends StateNotifier<List<Location>> {
 
   Future<void> loadLocations() async {
     List<Location> formattedLocations = [];
-    Database db = await _getDatabaseLocations();
-    List locations = await db.query('locations');
+    Database db = await initDb();
+    List locations = await db.query(LOCATIONS_TABLE);
 
     for (var location in locations) {
       formattedLocations.add(Location(
@@ -28,8 +29,8 @@ class LocationNotifier extends StateNotifier<List<Location>> {
   }
 
   void addLocation(Location location) async {
-    Database db = await _getDatabaseLocations();
-    db.insert('locations', {
+    Database db = await initDb();
+    db.insert(LOCATIONS_TABLE, {
       'id': location.id,
       'name': location.name,
       'lat': location.lat,
@@ -42,9 +43,9 @@ class LocationNotifier extends StateNotifier<List<Location>> {
   }
 
   void updateLocation(Location location) async {
-    Database db = await _getDatabaseLocations();
+    Database db = await initDb();
     db.update(
-      'locations',
+      LOCATIONS_TABLE,
       {
         'name': location.name,
         'lat': location.lat,
@@ -61,25 +62,10 @@ class LocationNotifier extends StateNotifier<List<Location>> {
   }
 
   void removeLocation(String locationId) async {
-    Database db = await _getDatabaseLocations();
-    db.delete('locations', where: 'id = ?', whereArgs: [locationId]);
+    Database db = await initDb();
+    db.delete(LOCATIONS_TABLE, where: 'id = ?', whereArgs: [locationId]);
 
     state = state.where((location) => location.id != locationId).toList();
-  }
-
-  Future<Database> _getDatabaseLocations() async {
-    final dbPath = await sql.getDatabasesPath();
-    Database db = await sql
-        .openDatabase(path.join(dbPath, 'vistedLocations.db'), version: 2,
-            onCreate: (db, version) async {
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, lat REAL, long REAL, color TEXT, is_home INTEGER)');
-    }, onUpgrade: (db, oldVersion, newVersion) async {
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, lat REAL, long REAL, color TEXT, is_home INTEGER)');
-    });
-
-    return db;
   }
 }
 

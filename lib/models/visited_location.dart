@@ -27,4 +27,9 @@ class VistedLocation {
 
     return null;
   }
+
+  VistedLocation.fromMap(map)
+      : id = map['id'],
+        dateTime = map['date_time'],
+        locationId = map['location_id'];
 }

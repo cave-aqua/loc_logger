@@ -46,7 +46,6 @@ class _LocationsOverviewState extends ConsumerState<LocationsOverview> {
       body: ListView.builder(
         itemCount: locations.length,
         itemBuilder: (context, index) {
-          print(locations[index].color.value);
           return Row(
             children: [
               ListItemWidget(

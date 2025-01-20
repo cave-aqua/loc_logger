@@ -1,17 +1,43 @@
-import 'dart:ffi';
-
-import 'package:flutter/foundation.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:loc_logger/models/visited_location.dart';
+import 'package:loc_logger/services/init_database.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart' as path;
+import 'package:sqflite/sqflite.dart' as sql;
+import 'package:uuid/uuid.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
-import 'package:loc_logger/services/init_database.dart';
-import 'package:sqflite/sqflite.dart' as sql;
-import 'package:path/path.dart' as path;
-import 'package:uuid/uuid.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:geodesy/geodesy.dart' show Geodesy;
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter/foundation.dart';
+import 'package:latlong2/latlong.dart';
 
-Future<bool> registerLocation() async {
+Future<int> addVisitedLocation(VistedLocation vistedLocation) async {
+  Database db = await initDb();
+
+  int result = await db.insert(VISISTED_LOCATION_TABLE, {
+    'id': vistedLocation.id,
+    'date_time': vistedLocation.dateTime,
+    'location_id': vistedLocation.locationId,
+  });
+
+  return result;
+}
+
+Future<List<VistedLocation>> getVisitedLocationsByLocationId() async {
+  Database db = await initDb();
+
+  List<Map> visitedLocations = await db.query(VISISTED_LOCATION_TABLE);
+
+  List<VistedLocation> formattedVisitedLocations = visitedLocations
+      .map((locationMap) => VistedLocation.fromMap(locationMap))
+      .toList();
+
+  return formattedVisitedLocations;
+}
+
+Future<String?> getCurrentLocationId() async {
+  Database db = await initDb();
+
   if (defaultTargetPlatform == TargetPlatform.android) {
     GeolocatorAndroid.registerWith();
   } else if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -20,7 +46,7 @@ Future<bool> registerLocation() async {
 
   bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
   if (!serviceEnabled) {
-    return false;
+    return null;
   }
 
   LocationPermission permission = await Geolocator.checkPermission();
@@ -33,20 +59,12 @@ Future<bool> registerLocation() async {
 
   Position userLoc = await Geolocator.getCurrentPosition();
 
-  await getClosestLocation(userLoc);
-
-  return true;
-}
-
-Future<bool> getClosestLocation(Position userLocation) async {
-  double lat = userLocation.latitude;
-  double long = userLocation.longitude;
-
-  final db = await initDb();
+  double lat = userLoc.latitude;
+  double long = userLoc.longitude;
 
   List locations = await db.rawQuery('SELECT * FROM $LOCATIONS_TABLE');
   if (locations.isEmpty) {
-    return false;
+    return null;
   }
 
   Map<String, Map> computedLocations = {};
@@ -66,38 +84,12 @@ Future<bool> getClosestLocation(Position userLocation) async {
       createCoordsKey(result.first.latitude, result.first.longitude)];
 
   if (location == null) {
-    return false;
+    return null;
   }
 
-  bool checkIfLocationHasBeenSet = await isAlreadySet(location['id']);
-
-  if (checkIfLocationHasBeenSet) {
-    return true;
-  }
-
-  String currentDay = DateTime.now().toString();
-
-  db.insert(VISISTED_LOCATION_TABLE, {
-    'id': const Uuid().v4(),
-    'dateVisited': currentDay,
-    'locationId': location['id'],
-  });
-
-  return true;
+  return location['id'];
 }
 
 String createCoordsKey(double latitude, double longitude) {
   return const Uuid().v5(Uuid.NAMESPACE_NIL, "$latitude$longitude");
-}
-
-Future<bool> isAlreadySet(String locationId) async {
-  final db = await initDb();
-
-  List checkLocation = await db.rawQuery(
-      'SELECT COUNT(*) FROM $LOCATIONS_TABLE WHERE location_id = $locationId');
-  if (checkLocation[0] > 0) {
-    return true;
-  }
-
-  return false;
 }

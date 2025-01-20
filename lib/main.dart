@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/models/location.dart';
+import 'package:loc_logger/services/init_database.dart';
+import 'package:loc_logger/services/visited_location.dart';
 import 'package:loc_logger/widgets/calender_view.dart';
 import 'package:loc_logger/widgets/main_drawer.dart';
 import 'package:workmanager/workmanager.dart';
@@ -18,6 +20,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:geodesy/geodesy.dart' show Geodesy;
+import 'package:loc_logger/services/visited_location.dart';
 
 const String registerLocationKey = 'periodic-visited-location-register';
 
@@ -26,64 +29,18 @@ void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
     DartPluginRegistrant.ensureInitialized();
 
-    final dbPath = await sql.getDatabasesPath();
-    final db = await sql.openDatabase(path.join(dbPath, 'vistedLocations.db'),
-        version: 1);
+    String? locationId = await getCurrentLocationId();
 
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      GeolocatorAndroid.registerWith();
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      GeolocatorApple.registerWith();
-    }
-
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
+    if (locationId == null) {
       return false;
     }
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
+    VistedLocation visitedLocation = VistedLocation(
+        id: const Uuid().v4(),
+        dateTime: DateTime.now().toString(),
+        locationId: locationId);
 
-    Position userLoc = await Geolocator.getCurrentPosition();
-
-    double lat = userLoc.latitude;
-    double long = userLoc.longitude;
-
-    List locations = await db.rawQuery('SELECT * FROM locations');
-    if (locations.isEmpty) {
-      return false;
-    }
-
-    Map<String, Map> computedLocations = {};
-    List<LatLng> latLongListLocations = [];
-
-    locations.forEach((location) {
-      double lat = location['lat'];
-      double long = location['long'];
-      computedLocations[createCoordsKey(lat, long)] = location;
-      latLongListLocations.add(LatLng(lat, long));
-    });
-
-    List<LatLng> result =
-        Geodesy().pointsInRange(LatLng(lat, long), latLongListLocations, 200);
-
-    Map? location = computedLocations[
-        createCoordsKey(result.first.latitude, result.first.longitude)];
-
-    if (location == null) {
-      return false;
-    }
-
-    // await db.insert('vistedLocations', {
-    //   'id': const Uuid().v4(),
-    //   'dateVisited': currentDay,
-    //   'locationId': location['id'],
-    // });
+    addVisitedLocation(visitedLocation);
 
     return Future.value(true);
   });
@@ -93,7 +50,7 @@ String createCoordsKey(double latitude, double longitude) {
   return const Uuid().v5(Uuid.NAMESPACE_NIL, "$latitude$longitude");
 }
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Workmanager().initialize(
     callbackDispatcher,
@@ -110,6 +67,9 @@ void main() {
       requiresStorageNotLow: false,
     ),
   );
+
+  await initDb();
+
   runApp(
     const ProviderScope(
       child: MainApp(),
@@ -131,48 +91,6 @@ class _MainAppState extends State<MainApp> {
   List<VistedLocation> formattedVisitedLocations = [];
   List<Location> formattedLocations = [];
 
-  // Future<void> _getDatabase() async {
-  //   final dbPath = await sql.getDatabasesPath();
-  //   Database dbNew = await sql.openDatabase(
-  //       path.join(dbPath, 'vistedLocations.db'), onCreate: (db, version) async {
-  //     await db.execute(
-  //         'CREATE TABLE IF NOT EXISTS locations(id TEXT PRIMARY KEY, name TEXT, address TEXT, lat REAL, long REAL)');
-
-  //     await db.execute(
-  //         'CREATE TABLE IF NOT EXISTS vistedLocations (id TEXT PRIMARY KEY, dateVisited DATETIME, locationId TEXT, FOREIGN KEY (locationId) REFERENCES locations(id))');
-  //   }, version: 1);
-  //   visitedLocations = await dbNew.query('vistedLocations');
-  //   locations = await dbNew.query('locations');
-
-  //   if (visitedLocations != null && locations != null) {
-  //     if (visitedLocations!.isNotEmpty && locations!.isNotEmpty) {
-  //       formattedVisitedLocations.clear();
-  //       for (var vistetedLocation in visitedLocations!) {
-  //         formattedVisitedLocations.add(VistedLocation(
-  //             id: vistetedLocation['id'],
-  //             dateTime: vistetedLocation['dateVisited'],
-  //             locationId: vistetedLocation['locationId']));
-  //       }
-
-  //       for (var location in locations!) {
-  //         formattedLocations.add(
-  //           Location(
-  //               id: location['id'],
-  //               name: location['name'],
-  //               lat: location['lat'],
-  //               long: location['long'],
-  //               color: Colors.black,
-  //               isHome: true),
-  //         );
-  //       }
-  //     }
-  //   }
-
-  //   setState(() {
-  //     databaseLocs = dbNew;
-  //   });
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -189,7 +107,6 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.amber,
           title: const Text('Text'),
           actions: [],
         ),
