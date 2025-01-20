@@ -94,8 +94,10 @@ Future<bool> isAlreadySet(String locationId) async {
   final db = await initDb();
 
   List checkLocation = await db.rawQuery(
-      'SELECT COUNT(*) FROM $LOCATIONS_TABLE WHERE location_id = $locationId');
-  if (checkLocation[0] > 0) {
+      'SELECT COUNT(*) FROM $VISISTED_LOCATION_TABLE WHERE location_id = "$locationId"');
+
+  int Counter = checkLocation.first.row[0];
+  if (Counter > 0) {
     return true;
   }
 
