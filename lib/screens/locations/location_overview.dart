@@ -4,9 +4,6 @@ import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/providers/location_notifier.dart';
 import 'package:loc_logger/screens/locations/add_location.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_list_item.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
 
 class LocationsOverview extends ConsumerStatefulWidget {
   const LocationsOverview({super.key});

@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/services/init_database.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
 
 class LocationNotifier extends StateNotifier<List<Location>> {
   LocationNotifier() : super([]);

@@ -1,12 +1,8 @@
-import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:loc_logger/services/init_database.dart';
-import 'package:sqflite/sqflite.dart' as sql;
-import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geodesy/geodesy.dart' show Geodesy;
@@ -96,8 +92,8 @@ Future<bool> isAlreadySet(String locationId) async {
   List checkLocation = await db.rawQuery(
       'SELECT COUNT(*) FROM $VISISTED_LOCATION_TABLE WHERE location_id = "$locationId"');
 
-  int Counter = checkLocation.first.row[0];
-  if (Counter > 0) {
+  int counter = checkLocation.first.row[0];
+  if (counter > 0) {
     return true;
   }
 

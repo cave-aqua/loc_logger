@@ -9,9 +9,6 @@ import 'package:loc_logger/providers/location_notifier.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_picker.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_preview.dart';
 import 'package:loc_logger/services/get_global_device_status.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
 import 'package:uuid/uuid.dart';
 
 class AddLocation extends ConsumerStatefulWidget {

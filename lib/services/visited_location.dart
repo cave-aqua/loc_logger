@@ -1,8 +1,6 @@
 import 'package:loc_logger/models/visited_location.dart';
 import 'package:loc_logger/services/init_database.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
 import 'package:uuid/uuid.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';

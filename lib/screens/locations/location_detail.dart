@@ -1,7 +1,6 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math' as math;
 import 'package:geodesy/geodesy.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:loc_logger/models/location.dart';
@@ -9,10 +8,6 @@ import 'package:loc_logger/providers/location_notifier.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_picker.dart';
 import 'package:loc_logger/screens/locations/aggregations/location_preview.dart';
 import 'package:loc_logger/services/get_global_device_status.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
-import 'package:uuid/uuid.dart';
 
 class LocationDetailWidget extends ConsumerStatefulWidget {
   final Location initialLocation;

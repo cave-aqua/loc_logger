@@ -84,7 +84,7 @@ class _TestScreenState extends State<TestScreen> {
             ),
             ElevatedButton(
                 onPressed: () async {
-                  registerLocation();
+                  registerVisitedLocation();
                 },
                 child: const Text('Add new record')),
             ElevatedButton(

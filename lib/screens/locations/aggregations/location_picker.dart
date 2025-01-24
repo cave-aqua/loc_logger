@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geodesy/geodesy.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:loc_logger/services/get_global_device_status.dart';
 
 class LocationPicker extends StatefulWidget {
