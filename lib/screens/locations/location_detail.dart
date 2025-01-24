@@ -55,7 +55,7 @@ class _LocationDetailWidgetState extends ConsumerState<LocationDetailWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add location'),
+        title: Text('${widget.initialLocation.name}'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -161,7 +161,7 @@ class _LocationDetailWidgetState extends ConsumerState<LocationDetailWidget> {
               ElevatedButton.icon(
                   onPressed: _savePlace,
                   icon: const Icon(Icons.add),
-                  label: const Text('Add place'))
+                  label: const Text('Save location'))
             ],
           ),
         ),

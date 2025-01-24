@@ -1,9 +1,9 @@
 import 'dart:ffi';
 
 class DaySetting {
-  Int id;
+  int id;
   String name;
-  Bool isActive;
+  bool isActive;
 
   DaySetting(
     this.id,

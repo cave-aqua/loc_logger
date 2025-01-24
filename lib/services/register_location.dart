@@ -2,12 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
+import 'package:loc_logger/services/day_settings.dart';
 import 'package:loc_logger/services/init_database.dart';
+import 'package:sqflite/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geodesy/geodesy.dart' show Geodesy;
 
 Future<bool> registerLocation() async {
+  int currentDay = DateTime.now().weekday;
+
+  if (!(await isDayActive(currentDay))) {
+    return true;
+  }
+
   if (defaultTargetPlatform == TargetPlatform.android) {
     GeolocatorAndroid.registerWith();
   } else if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -89,11 +97,18 @@ String createCoordsKey(double latitude, double longitude) {
 Future<bool> isAlreadySet(String locationId) async {
   final db = await initDb();
 
-  List checkLocation = await db.rawQuery(
-      'SELECT COUNT(*) FROM $VISISTED_LOCATION_TABLE WHERE location_id = "$locationId"');
+  int checkIfLocationHasBeenVisited = firstIntValue(await db.rawQuery(
+        '''
+    SELECT COUNT(*)
+    FROM $VISISTED_LOCATION_TABLE
+    WHERE location_id = ?
+    AND DATE(date_time) = DATE('now', 'localtime')
+    ''',
+        [locationId], // Safely bind locationId to prevent SQL injection
+      )) ??
+      0;
 
-  int counter = checkLocation.first.row[0];
-  if (counter > 0) {
+  if (checkIfLocationHasBeenVisited > 0) {
     return true;
   }
 

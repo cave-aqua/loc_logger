@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loc_logger/screens/locations/location_overview.dart';
+import 'package:loc_logger/screens/settings/setting_screen.dart';
 import 'package:loc_logger/screens/test_screen.dart';
 import 'package:loc_logger/widgets/drawer_aggregation/main_drawer_list_tile.dart';
 
@@ -25,7 +26,13 @@ class MainDrawer extends StatelessWidget {
           MainDrawerListTile(
             icon: Icons.settings,
             title: 'Settings',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingScreen(),
+                  ));
+            },
           ),
           MainDrawerListTile(
             icon: Icons.settings,
