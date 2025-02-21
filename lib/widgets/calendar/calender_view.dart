@@ -31,17 +31,19 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
   Widget build(BuildContext context) {
     List<WeekView> weeks = buildCalenderMonth();
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MonthSwitcher(
-          currentDate: widget.givenDate,
-        ),
-        const WeekDaysHeader(),
-        ...weeks
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MonthSwitcher(
+            currentDate: widget.givenDate,
+          ),
+          const WeekDaysHeader(),
+          ...weeks
+        ],
+      ),
     );
   }
 

@@ -81,19 +81,24 @@ class _MainAppState extends ConsumerState<MainApp> {
           actions: const [],
         ),
         drawer: const MainDrawer(),
-        body: FutureBuilder(
-          future: ref
-              .read(daysVisitedProvider.notifier)
-              .loadDaysVisited(currentDateTime),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+        body: SizedBox(
+          child: FutureBuilder(
+            future: ref
+                .read(daysVisitedProvider.notifier)
+                .loadDaysVisited(currentDateTime),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                  height: 350,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
 
-            return CalenderView(givenDate: currentDateTime);
-          },
+              return CalenderView(givenDate: currentDateTime);
+            },
+          ),
         ),
       ),
     );
