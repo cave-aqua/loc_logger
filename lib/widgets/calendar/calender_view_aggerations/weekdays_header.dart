@@ -27,9 +27,7 @@ class DayHeaderHolder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      margin: const EdgeInsets.symmetric(horizontal: 3),
+    return Expanded(
       child: Center(
         child: Text(
           dayString,

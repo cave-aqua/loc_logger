@@ -27,28 +27,30 @@ class DayView extends StatelessWidget {
       }
     }
 
-    BoxDecoration? background;
+    BoxDecoration background =
+        BoxDecoration(border: Border.all(color: Colors.grey));
 
     if (colors.length > 1) {
       background = BoxDecoration(
-        gradient: LinearGradient(
-          colors: colors,
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-      );
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          border: Border.all(color: Colors.grey));
     } else if (colors.length == 1) {
-      background = BoxDecoration(color: colors.first);
+      background = BoxDecoration(
+          color: colors.first, border: Border.all(color: Colors.grey));
     }
 
-    return InkWell(
-      child: Container(
-        width: 40,
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.symmetric(horizontal: 3),
-        decoration: background,
-        child: Center(
-          child: Text(date.day.toString()),
+    return Expanded(
+      child: InkWell(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: background,
+          child: Center(
+            child: Text(date.day.toString()),
+          ),
         ),
       ),
     );
@@ -60,8 +62,6 @@ class EmptyDayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 46,
-    );
+    return Expanded(child: Container());
   }
 }
