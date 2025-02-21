@@ -1,22 +1,9 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/services/init_database.dart';
 import 'package:loc_logger/services/visited_location.dart';
-import 'package:workmanager/workmanager.dart';
 import 'package:loc_logger/models/visited_location.dart';
 import 'package:loc_logger/services/register_location.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart' as path;
-import 'package:sqflite/sqflite.dart' as sql;
-import 'package:geolocator/geolocator.dart';
-import 'package:uuid/uuid.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:geolocator_android/geolocator_android.dart';
-import 'package:geolocator_apple/geolocator_apple.dart';
-import 'package:geodesy/geodesy.dart' show Geodesy;
 
 class TestScreen extends StatefulWidget {
   const TestScreen({super.key});
@@ -84,7 +71,7 @@ class _TestScreenState extends State<TestScreen> {
             ),
             ElevatedButton(
                 onPressed: () async {
-                  registerLocation();
+                  await registerLocation();
                 },
                 child: const Text('Add new record')),
             ElevatedButton(

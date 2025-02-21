@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class DaySetting {
   int id;
   String name;

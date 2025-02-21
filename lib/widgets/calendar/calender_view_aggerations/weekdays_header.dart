@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:loc_logger/widgets/calender_view_aggerations/week_view.dart';
+import 'package:loc_logger/widgets/calendar/calender_view_aggerations/week_view.dart';
 
 class WeekDaysHeader extends StatelessWidget {
   const WeekDaysHeader({super.key});

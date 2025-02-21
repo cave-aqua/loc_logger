@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:loc_logger/widgets/calender_view_aggerations/day_view.dart';
-import 'package:loc_logger/widgets/calender_view_aggerations/month_switcher.dart';
-import 'package:loc_logger/widgets/calender_view_aggerations/week_view.dart';
-import 'package:loc_logger/widgets/calender_view_aggerations/weekdays_header.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loc_logger/providers/days_visited_located_notifier.dart';
+import 'package:loc_logger/providers/location_notifier.dart';
+import 'package:loc_logger/widgets/calendar/calender_view_aggerations/day_view.dart';
+import 'package:loc_logger/widgets/calendar/calender_view_aggerations/month_switcher.dart';
+import 'package:loc_logger/widgets/calendar/calender_view_aggerations/week_view.dart';
+import 'package:loc_logger/widgets/calendar/calender_view_aggerations/weekdays_header.dart';
+import 'package:loc_logger/providers/selected_date_notifier.dart';
+import 'package:loc_logger/models/location.dart';
+import 'package:loc_logger/models/visited_location.dart';
 
-// ignore: must_be_immutable
-class CalenderView extends StatefulWidget {
-  DateTime givenDate;
+class CalenderView extends ConsumerStatefulWidget {
+  final DateTime givenDate;
 
-  CalenderView({super.key, required this.givenDate});
+  const CalenderView({super.key, required this.givenDate});
 
   @override
-  State<CalenderView> createState() => _CalenderViewState();
+  ConsumerState<CalenderView> createState() => _CalenderViewState();
 }
 
-class _CalenderViewState extends State<CalenderView> {
+class _CalenderViewState extends ConsumerState<CalenderView> {
+  @override
+  void initState() {
+    super.initState();
+    // Call the loadLocations method to fetch data from the database
+    Future.microtask(() => ref.read(locationProvider.notifier).loadLocations());
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<WeekView> weeks = buildCalenderMonth(widget.givenDate);
+    List<WeekView> weeks = buildCalenderMonth();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -26,8 +38,6 @@ class _CalenderViewState extends State<CalenderView> {
       children: [
         MonthSwitcher(
           currentDate: widget.givenDate,
-          incrementMonth: incrementMonth,
-          decrementMonth: decrementMonth,
         ),
         const WeekDaysHeader(),
         ...weeks
@@ -35,7 +45,12 @@ class _CalenderViewState extends State<CalenderView> {
     );
   }
 
-  List<WeekView> buildCalenderMonth(DateTime chosenDate) {
+  List<WeekView> buildCalenderMonth() {
+    DateTime chosenDate = ref.watch(selectedDateNotifierProvider);
+    List<Location> locations = ref.read(locationProvider);
+    Map<String, List<VistedLocation>> daysVisitedLocations =
+        ref.watch(daysVisitedProvider);
+
     int month = chosenDate.month;
     int year = chosenDate.year;
 
@@ -53,16 +68,15 @@ class _CalenderViewState extends State<CalenderView> {
 
     void addDayToPointer() {
       daysOfTheMonth[weekCounter].add(
-        DayView(dayPointer),
+        DayView(
+          dayPointer,
+          locations: locations,
+          visitedLocations: daysVisitedLocations['${dayPointer.day}'],
+        ),
       );
 
-      dayPointer = dayPointer.add(
-        const Duration(days: 1),
-      );
-      //Check for when winter time gets implemented we need to add one hour to get the following day
-      if (dayPointer.hour == 23) {
-        dayPointer = dayPointer.add(const Duration(hours: 2));
-      }
+      dayPointer =
+          DateTime(dayPointer.year, dayPointer.month, dayPointer.day + 1);
     }
 
     //We set a empty days if the first day of the month is not the first day of the week.
@@ -78,10 +92,10 @@ class _CalenderViewState extends State<CalenderView> {
     }
 
     while (dayPointer.month == month) {
+      //We build here the last week with empty day views
       if (dayPointer.day == lastDayOfTheMonth.day) {
         if (daysOfTheMonth[weekCounter].length < DateTime.daysPerWeek) {
           addDayToPointer();
-          // print('80 $dayPointer');
         }
 
         int lastWeekLength = daysOfTheMonth[weekCounter].length;
@@ -101,10 +115,7 @@ class _CalenderViewState extends State<CalenderView> {
         break;
       }
 
-      //TODO: Take in account daylight savings
-
       addDayToPointer();
-      // print('101 $dayPointer');
 
       //We go to next week
       if (daysOfTheMonth[weekCounter].length == DateTime.daysPerWeek) {
@@ -117,19 +128,5 @@ class _CalenderViewState extends State<CalenderView> {
     }
 
     return weeks;
-  }
-
-  void incrementMonth() {
-    setState(() {
-      widget.givenDate = DateTime(widget.givenDate.year,
-          widget.givenDate.month + 1, widget.givenDate.day);
-    });
-  }
-
-  void decrementMonth() {
-    setState(() {
-      widget.givenDate = DateTime(widget.givenDate.year,
-          widget.givenDate.month - 1, widget.givenDate.day);
-    });
   }
 }

@@ -91,3 +91,39 @@ Future<String?> getCurrentLocationId() async {
 String createCoordsKey(double latitude, double longitude) {
   return const Uuid().v5(Uuid.NAMESPACE_NIL, "$latitude$longitude");
 }
+
+Future<Map<String, List<VistedLocation>>> getVistedLocationFromMonthBack(
+    DateTime dateTime) async {
+  final db = await initDb();
+
+  String monthStr =
+      dateTime.month.toString().padLeft(2, '0'); // Ensure month has two digits
+
+  List<Map> visitedLocationsSelectedMonth = await db.query(
+    VISISTED_LOCATION_TABLE,
+    where: "strftime('%Y-%m', date_time) = ?",
+    whereArgs: ["${dateTime.year}-$monthStr"],
+  );
+
+  Map<String, List<VistedLocation>> formattedListedVisited = {};
+
+  if (visitedLocationsSelectedMonth.isEmpty) {
+    return formattedListedVisited;
+  }
+
+  for (var i = 0; i < visitedLocationsSelectedMonth.length; i++) {
+    VistedLocation rawVisitedLocation =
+        VistedLocation.fromMap(visitedLocationsSelectedMonth[i]);
+
+    //We don't check on null because vistedLocation wouldn't be returned from query.
+    String dayKey = '${rawVisitedLocation.getDate()!.day}';
+
+    if (formattedListedVisited.containsKey(dayKey)) {
+      formattedListedVisited[dayKey]!.add(rawVisitedLocation);
+    } else {
+      formattedListedVisited[dayKey] = [rawVisitedLocation];
+    }
+  }
+
+  return formattedListedVisited;
+}

@@ -3,7 +3,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:loc_logger/services/day_settings.dart';
+import 'package:loc_logger/models/visited_location.dart';
 import 'package:loc_logger/services/init_database.dart';
+import 'package:logger/logger.dart';
 import 'package:sqflite/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 import 'package:latlong2/latlong.dart';
@@ -37,9 +39,7 @@ Future<bool> registerLocation() async {
 
   Position userLoc = await Geolocator.getCurrentPosition();
 
-  await getClosestLocation(userLoc);
-
-  return true;
+  return await getClosestLocation(userLoc);
 }
 
 Future<bool> getClosestLocation(Position userLocation) async {
@@ -74,20 +74,21 @@ Future<bool> getClosestLocation(Position userLocation) async {
   }
 
   bool checkIfLocationHasBeenSet = await isAlreadySet(location['id']);
+  Logger().i('Location has been set: $checkIfLocationHasBeenSet');
 
   if (checkIfLocationHasBeenSet) {
-    return true;
+    return Future.value(true);
   }
 
   String currentDay = DateTime.now().toString();
 
   db.insert(VISISTED_LOCATION_TABLE, {
     'id': const Uuid().v4(),
-    'dateVisited': currentDay,
-    'locationId': location['id'],
+    'date_time': currentDay,
+    'location_id': location['id'],
   });
 
-  return true;
+  return Future.value(true);
 }
 
 String createCoordsKey(double latitude, double longitude) {
@@ -104,7 +105,7 @@ Future<bool> isAlreadySet(String locationId) async {
     WHERE location_id = ?
     AND DATE(date_time) = DATE('now', 'localtime')
     ''',
-        [locationId], // Safely bind locationId to prevent SQL injection
+        [locationId],
       )) ??
       0;
 
