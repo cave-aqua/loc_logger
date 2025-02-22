@@ -13,7 +13,7 @@
         tools:replace="android:label"
         android:label="loc_logger"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/loc_logger">
         <activity
             android:name=".MainActivity"
             android:exported="true"

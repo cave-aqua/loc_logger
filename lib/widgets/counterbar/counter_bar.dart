@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/providers/days_visited_located_notifier.dart';
@@ -32,7 +31,7 @@ class _CounterBarState extends ConsumerState<CounterBar>
       duration: const Duration(milliseconds: 650),
       builder: (context, value, child) {
         return LinearProgressIndicator(
-          backgroundColor: Colors.grey,
+          backgroundColor: Color(0xFF9E9E9E),
           color: widget.location.color,
           value: value,
           minHeight: 20,
