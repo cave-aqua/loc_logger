@@ -49,7 +49,7 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
 
   List<WeekView> buildCalenderMonth() {
     DateTime chosenDate = ref.watch(selectedDateNotifierProvider);
-    List<Location> locations = ref.read(locationProvider);
+    List<Location> locations = ref.watch(locationProvider);
     Map<String, List<VistedLocation>> daysVisitedLocations =
         ref.watch(daysVisitedProvider);
 

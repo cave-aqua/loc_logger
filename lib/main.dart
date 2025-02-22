@@ -2,15 +2,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/providers/days_visited_located_notifier.dart';
 import 'package:loc_logger/providers/selected_date_notifier.dart';
 import 'package:loc_logger/services/init_database.dart';
 import 'package:loc_logger/widgets/calendar/calender_view.dart';
+import 'package:loc_logger/widgets/counterbar/counter_bar_list.dart';
 import 'package:loc_logger/widgets/main_drawer.dart';
 import 'package:workmanager/workmanager.dart';
-import 'package:loc_logger/models/visited_location.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:loc_logger/services/register_location.dart';
 
 const String registerLocationKey = 'periodic-visited-location-register';
@@ -58,12 +56,6 @@ class MainApp extends ConsumerStatefulWidget {
 }
 
 class _MainAppState extends ConsumerState<MainApp> {
-  Database? databaseLocs;
-  List? visitedLocations;
-  List? locations;
-  List<VistedLocation> formattedVisitedLocations = [];
-  List<Location> formattedLocations = [];
-
   @override
   void initState() {
     super.initState();
@@ -81,23 +73,29 @@ class _MainAppState extends ConsumerState<MainApp> {
           actions: const [],
         ),
         drawer: const MainDrawer(),
-        body: SizedBox(
-          child: FutureBuilder(
-            future: ref
-                .read(daysVisitedProvider.notifier)
-                .loadDaysVisited(currentDateTime),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                  height: 350,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              FutureBuilder(
+                future: ref
+                    .read(daysVisitedProvider.notifier)
+                    .loadDaysVisited(currentDateTime),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(
+                      height: 350,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
 
-              return CalenderView(givenDate: currentDateTime);
-            },
+                  return CalenderView(givenDate: currentDateTime);
+                },
+              ),
+              const SizedBox(height: 20),
+              const CounterBarList()
+            ],
           ),
         ),
       ),

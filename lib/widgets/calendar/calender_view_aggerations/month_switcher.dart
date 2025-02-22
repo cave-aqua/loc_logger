@@ -35,7 +35,10 @@ class MonthSwitcher extends ConsumerWidget {
                 .read(selectedDateNotifierProvider.notifier)
                 .decreaseByMonth(),
             icon: const Icon(Icons.arrow_back)),
-        Text('${months[currentDate.month - 1]} ${currentDate.year}'),
+        Text(
+          '${months[currentDate.month - 1]} ${currentDate.year}',
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
         IconButton(
             onPressed: () => ref
                 .read(selectedDateNotifierProvider.notifier)
