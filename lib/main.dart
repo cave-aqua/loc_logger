@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/providers/days_visited_located_notifier.dart';
 import 'package:loc_logger/providers/selected_date_notifier.dart';
@@ -21,23 +23,31 @@ void callbackDispatcher() {
   });
 }
 
+@pragma('vm:entry-point')
+void onStart(ServiceInstance serviceInstance) {
+  Timer.periodic(Duration(minutes: 5), (timer) async {
+    bool result = await registerLocation();
+  });
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Workmanager().initialize(
-    callbackDispatcher,
-    isInDebugMode: true,
-  );
-  Workmanager().registerPeriodicTask(
-    registerLocationKey,
-    'register-location',
-    frequency: const Duration(minutes: 15),
-    constraints: Constraints(
-      networkType: NetworkType.not_required,
-      requiresCharging: false,
-      requiresBatteryNotLow: false,
-      requiresStorageNotLow: false,
-    ),
-  );
+  // Workmanager().initialize(
+  //   callbackDispatcher,
+  //   isInDebugMode: true,
+  // );
+  // Workmanager().registerPeriodicTask(
+  //   registerLocationKey,
+  //   'register-location',
+  //   frequency: const Duration(minutes: 15),
+  //   constraints: Constraints(
+  //     networkType: NetworkType.not_required,
+  //     requiresCharging: false,
+  //     requiresBatteryNotLow: false,
+  //     requiresStorageNotLow: false,
+  //   ),
+  // );
+  await initializeService();
 
   await initDb();
 
@@ -46,6 +56,20 @@ void main() async {
       child: MainApp(),
     ),
   );
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  await service.configure(
+      iosConfiguration: IosConfiguration(),
+      androidConfiguration: AndroidConfiguration(
+        onStart: onStart,
+        autoStart: true,
+        isForegroundMode: true,
+        autoStartOnBoot: true,
+        foregroundServiceTypes: [AndroidForegroundType.location],
+      ));
 }
 
 class MainApp extends ConsumerStatefulWidget {
