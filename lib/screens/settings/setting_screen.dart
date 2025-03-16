@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:loc_logger/models/settings/day_setting.dart';
-import 'package:loc_logger/screens/settings/day_setting/day_setting_row.dart';
-import 'package:loc_logger/services/day_settings.dart';
+import 'package:loc_logger/screens/settings/aggregations/setting_list_item.dart';
+import 'package:loc_logger/screens/settings/day_setting/day_setting_screen.dart';
+import 'package:loc_logger/screens/settings/excluded_date_settings/excluded_date_setting_screen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -14,36 +14,22 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: FutureBuilder(
-        future: getDaySettings(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData && snapshot.data != null) {
-              List<DaySetting> daySettings = snapshot.data!;
-
-              return ListView.builder(
-                itemCount: daySettings.length,
-                itemBuilder: (context, index) {
-                  return DaySettingRow(daySetting: daySettings[index]);
-                },
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(snapshot.error.toString()),
-              );
-            }
-
-            return const Center(
-              child: Text('No day settings could be found'),
-            );
-          }
-
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Settings'),
+        ),
+        body: const SingleChildScrollView(
+          child: Column(
+            children: [
+              SettingListItem(
+                name: 'Days to be logged',
+                settingScreen: DaySettingScreen(),
+              ),
+              SettingListItem(
+                name: 'Excluded dates',
+                settingScreen: ExcludedDateSettingScreeen(),
+              ),
+            ],
+          ),
+        ));
   }
 }

@@ -12,14 +12,13 @@ class MainDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          MainDrawerListTile(icon: Icons.home, title: 'Home', onTap: () {}),
           MainDrawerListTile(
               icon: Icons.location_city_outlined,
               title: 'Locations',
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) {
-                    return LocationsOverview();
+                    return const LocationsOverview();
                   },
                 ));
               }),
@@ -39,7 +38,7 @@ class MainDrawer extends StatelessWidget {
             title: 'Test',
             onTap: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => TestScreen()));
+                  MaterialPageRoute(builder: (context) => const TestScreen()));
             },
           ),
         ],

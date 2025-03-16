@@ -32,21 +32,7 @@ void onStart(ServiceInstance serviceInstance) {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Workmanager().initialize(
-  //   callbackDispatcher,
-  //   isInDebugMode: true,
-  // );
-  // Workmanager().registerPeriodicTask(
-  //   registerLocationKey,
-  //   'register-location',
-  //   frequency: const Duration(minutes: 15),
-  //   constraints: Constraints(
-  //     networkType: NetworkType.not_required,
-  //     requiresCharging: false,
-  //     requiresBatteryNotLow: false,
-  //     requiresStorageNotLow: false,
-  //   ),
-  // );
+
   await initializeService();
 
   await initDb();

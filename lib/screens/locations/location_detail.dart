@@ -55,7 +55,17 @@ class _LocationDetailWidgetState extends ConsumerState<LocationDetailWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.initialLocation.name}'),
+        title: Text(widget.initialLocation.name),
+        actions: [
+          IconButton(
+              onPressed: () {
+                ref
+                    .read(locationProvider.notifier)
+                    .removeLocation(widget.initialLocation.id);
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.delete))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -115,6 +125,11 @@ class _LocationDetailWidgetState extends ConsumerState<LocationDetailWidget> {
                         onPressed: () async {
                           Position? pos = await getGlobalDeviceStatus();
                           if (pos == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'Couldn\'t get location, check your settings')),
+                            );
                             return;
                           }
 

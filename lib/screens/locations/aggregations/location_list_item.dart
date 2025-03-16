@@ -16,36 +16,32 @@ class ListItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Dismissible(
-        key: Key(location.id),
-        onDismissed: (direction) => removeLocation(location.id),
-        child: GestureDetector(
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    LocationDetailWidget(initialLocation: location),
-              )),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(color: location.color),
-            height: 90,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  location.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                if (location.isHome)
-                  const SizedBox(
-                    child: Icon(
-                      Icons.home,
-                      color: Colors.white,
-                    ),
-                  )
-              ],
-            ),
+      child: GestureDetector(
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  LocationDetailWidget(initialLocation: location),
+            )),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(color: location.color),
+          height: 90,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                location.name,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              if (location.isHome)
+                const SizedBox(
+                  child: Icon(
+                    Icons.home,
+                    color: Colors.white,
+                  ),
+                )
+            ],
           ),
         ),
       ),

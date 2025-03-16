@@ -62,6 +62,8 @@ class LocationNotifier extends StateNotifier<List<Location>> {
   void removeLocation(String locationId) async {
     Database db = await initDb();
     db.delete(LOCATIONS_TABLE, where: 'id = ?', whereArgs: [locationId]);
+    db.delete(VISISTED_LOCATION_TABLE,
+        where: 'location_id = ?', whereArgs: [locationId]);
 
     state = state.where((location) => location.id != locationId).toList();
   }

@@ -30,6 +30,11 @@ class _AddLocationState extends ConsumerState<AddLocation> {
       Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0);
   late LocationPreviewWidget pickLoc;
 
+  bool isLocPreviewVisible = false;
+  Widget locationPreview = const Center(
+    child: CircularProgressIndicator(),
+  );
+
   @override
   void dispose() {
     // Need to make sure that the controllers are killed when we are done.
@@ -102,9 +107,8 @@ class _AddLocationState extends ConsumerState<AddLocation> {
               const SizedBox(
                 height: 20,
               ),
-              if (coords != null)
-                SizedBox(
-                    height: 180, child: LocationPreviewWidget(coords: coords!)),
+              if (isLocPreviewVisible)
+                SizedBox(height: 180, child: locationPreview),
               const SizedBox(
                 height: 20,
               ),
@@ -134,6 +138,9 @@ class _AddLocationState extends ConsumerState<AddLocation> {
                       child: IconButton(
                         icon: const Icon(Icons.gps_fixed),
                         onPressed: () async {
+                          setState(() {
+                            isLocPreviewVisible = true;
+                          });
                           Position? pos = await getGlobalDeviceStatus();
                           if (pos == null) {
                             return;
@@ -141,6 +148,8 @@ class _AddLocationState extends ConsumerState<AddLocation> {
 
                           setState(() {
                             coords = LatLng(pos.latitude, pos.longitude);
+                            locationPreview =
+                                LocationPreviewWidget(coords: coords!);
                           });
                         },
                       ))
