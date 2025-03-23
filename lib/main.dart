@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:loc_logger/providers/days_visited_located_notifier.dart';
 import 'package:loc_logger/providers/selected_date_notifier.dart';
 import 'package:loc_logger/services/init_database.dart';
@@ -26,7 +27,7 @@ void callbackDispatcher() {
 @pragma('vm:entry-point')
 void onStart(ServiceInstance serviceInstance) {
   Timer.periodic(Duration(minutes: 5), (timer) async {
-    bool result = await registerLocation();
+    await registerLocation();
   });
 }
 
@@ -83,30 +84,47 @@ class _MainAppState extends ConsumerState<MainApp> {
           actions: const [],
         ),
         drawer: const MainDrawer(),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              FutureBuilder(
-                future: ref
-                    .read(daysVisitedProvider.notifier)
-                    .loadDaysVisited(currentDateTime),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox(
-                      height: 350,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
+        body: FutureBuilder(
+          future: Geolocator.requestPermission(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-                  return CalenderView(givenDate: currentDateTime);
-                },
-              ),
-              const SizedBox(height: 20),
-              const CounterBarList()
-            ],
-          ),
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    FutureBuilder(
+                      future: ref
+                          .read(daysVisitedProvider.notifier)
+                          .loadDaysVisited(currentDateTime),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox(
+                            height: 350,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+
+                        return CalenderView(givenDate: currentDateTime);
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    const CounterBarList()
+                  ],
+                ),
+              );
+            }
+
+            return const Center(child: Text('Enable location to use the app'));
+          },
         ),
       ),
     );

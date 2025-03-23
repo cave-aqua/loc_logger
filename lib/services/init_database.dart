@@ -25,8 +25,7 @@ Future<Database> initDb() async {
       );
 
       await addDayRecords(db);
-    },
-    onUpgrade: (db, oldVersion, newVersion) async {
+
       await db.execute(
           'CREATE TABLE IF NOT EXISTS $EXCLUDED_DAYS_TABLE (key VARCHAR(5), unix_time INTEGER NULL)');
 

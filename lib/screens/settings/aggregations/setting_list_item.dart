@@ -9,8 +9,8 @@ class SettingListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
+    return InkWell(
+      onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -19,9 +19,11 @@ class SettingListItem extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+            border: Border.all(
+          width: 1,
           color: Colors.grey,
-        ),
+        )),
         child: Row(
           children: [
             Expanded(

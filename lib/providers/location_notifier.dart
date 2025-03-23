@@ -37,7 +37,7 @@ class LocationNotifier extends StateNotifier<List<Location>> {
       'is_home': location.isHome,
     });
 
-    state = [location, ...state];
+    state = [...state, location];
   }
 
   void updateLocation(Location location) async {
@@ -56,7 +56,7 @@ class LocationNotifier extends StateNotifier<List<Location>> {
     );
 
     state.removeWhere((element) => element.id == location.id);
-    state = [location, ...state];
+    state = [...state, location];
   }
 
   void removeLocation(String locationId) async {

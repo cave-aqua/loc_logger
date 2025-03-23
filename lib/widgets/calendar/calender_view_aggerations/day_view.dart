@@ -29,14 +29,12 @@ class DayView extends StatelessWidget {
 
     return Expanded(
       child: Container(
-        height: 30,
+        height: 35,
         decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
         child: Stack(
           children: [
-            Expanded(
-              child: Row(
-                children: _buildBackground(colors),
-              ),
+            Row(
+              children: _buildBackground(colors),
             ),
             Center(
               child: Text(
@@ -55,11 +53,8 @@ class DayView extends StatelessWidget {
     for (Color color in colors) {
       backgroundColors.add(
         Flexible(
-          flex: 1,
-          child: Expanded(
-            child: Container(
-              decoration: BoxDecoration(color: color),
-            ),
+          child: Container(
+            decoration: BoxDecoration(color: color),
           ),
         ),
       );
