@@ -5,12 +5,13 @@ import 'package:sqflite/sqflite.dart' as sql;
 const String VISISTED_LOCATION_TABLE = 'visited_locations';
 const String LOCATIONS_TABLE = 'locations';
 const String ACTIVE_DAYS_TABLE = 'active_days';
+const String EXCLUDED_DAYS_TABLE = 'excluded_days';
 
 Future<Database> initDb() async {
   final dbPath = await sql.getDatabasesPath();
   Database db = await sql.openDatabase(
     path.join(dbPath, 'vistedLocations.db'),
-    version: 1,
+    version: 2,
     onCreate: (db, version) async {
       await db.execute(
           'CREATE TABLE IF NOT EXISTS $LOCATIONS_TABLE(id TEXT PRIMARY KEY, name TEXT, lat REAL, long REAL, color TEXT, is_home INTEGER)');
@@ -24,6 +25,12 @@ Future<Database> initDb() async {
       );
 
       await addDayRecords(db);
+    },
+    onUpgrade: (db, oldVersion, newVersion) async {
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS $EXCLUDED_DAYS_TABLE (key VARCHAR(5), unix_time INTEGER NULL)');
+
+      await addExcludedDayRecords(db);
     },
   );
 
@@ -41,4 +48,9 @@ Future<void> addDayRecords(Database db) async {
   await db
       .insert(ACTIVE_DAYS_TABLE, {'id': 6, 'name': 'Saturday', 'active': 0});
   await db.insert(ACTIVE_DAYS_TABLE, {'id': 7, 'name': 'Sunday', 'active': 0});
+}
+
+Future<void> addExcludedDayRecords(Database db) async {
+  await db.insert(EXCLUDED_DAYS_TABLE, {'key': 'from', 'unix_time': null});
+  await db.insert(EXCLUDED_DAYS_TABLE, {'key': 'until', 'unix_time': null});
 }

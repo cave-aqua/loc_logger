@@ -3,7 +3,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:loc_logger/services/day_settings.dart';
-import 'package:loc_logger/models/visited_location.dart';
 import 'package:loc_logger/services/init_database.dart';
 import 'package:logger/logger.dart';
 import 'package:sqflite/utils/utils.dart';

@@ -26,7 +26,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               SettingListItem(
                 name: 'Excluded dates',
-                settingScreen: ExcludedDateSettingScreeen(),
+                settingScreen: ExcludedDateSettingScreen(),
               ),
             ],
           ),

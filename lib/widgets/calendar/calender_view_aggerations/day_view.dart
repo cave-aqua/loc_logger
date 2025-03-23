@@ -27,33 +27,45 @@ class DayView extends StatelessWidget {
       }
     }
 
-    BoxDecoration background =
-        BoxDecoration(border: Border.all(color: Colors.grey));
-
-    if (colors.length > 1) {
-      background = BoxDecoration(
-          gradient: LinearGradient(
-            colors: colors,
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          border: Border.all(color: Colors.grey));
-    } else if (colors.length == 1) {
-      background = BoxDecoration(
-          color: colors.first, border: Border.all(color: Colors.grey));
-    }
-
     return Expanded(
-      child: InkWell(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: background,
-          child: Center(
-            child: Text(date.day.toString()),
-          ),
+      child: Container(
+        height: 30,
+        decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+        child: Stack(
+          children: [
+            Expanded(
+              child: Row(
+                children: _buildBackground(colors),
+              ),
+            ),
+            Center(
+              child: Text(
+                date.day.toString(),
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildBackground(List<Color> colors) {
+    List<Widget> backgroundColors = [];
+
+    for (Color color in colors) {
+      backgroundColors.add(
+        Flexible(
+          flex: 1,
+          child: Expanded(
+            child: Container(
+              decoration: BoxDecoration(color: color),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return backgroundColors;
   }
 }
 
