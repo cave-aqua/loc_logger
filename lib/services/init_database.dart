@@ -7,11 +7,14 @@ const String LOCATIONS_TABLE = 'locations';
 const String ACTIVE_DAYS_TABLE = 'active_days';
 const String EXCLUDED_DAYS_TABLE = 'excluded_days';
 
+const String ADVANCED_SETTINGS_TABLE = 'advanded_settings';
+const String TEST_SCREEN_KEY = 'test_screen';
+
 Future<Database> initDb() async {
   final dbPath = await sql.getDatabasesPath();
   Database db = await sql.openDatabase(
     path.join(dbPath, 'vistedLocations.db'),
-    version: 2,
+    version: 4,
     onCreate: (db, version) async {
       await db.execute(
           'CREATE TABLE IF NOT EXISTS $LOCATIONS_TABLE(id TEXT PRIMARY KEY, name TEXT, lat REAL, long REAL, color TEXT, is_home INTEGER)');
@@ -30,6 +33,17 @@ Future<Database> initDb() async {
           'CREATE TABLE IF NOT EXISTS $EXCLUDED_DAYS_TABLE (key VARCHAR(5), unix_time INTEGER NULL)');
 
       await addExcludedDayRecords(db);
+    },
+    onUpgrade: (db, oldVersion, newVersion) async {
+      if (oldVersion < newVersion) {
+        await db.execute(
+            'CREATE TABLE IF NOT EXISTS $ADVANCED_SETTINGS_TABLE (key VARCHAR PRIMARY key, enabled INTEGER DEFAULT 0)');
+
+        await db.insert(ADVANCED_SETTINGS_TABLE, {
+          'key': TEST_SCREEN_KEY,
+          'enabled': 0,
+        });
+      }
     },
   );
 

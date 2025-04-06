@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:loc_logger/services/advanced_settings.dart';
 
 class AdvancedSettingsScreen extends ConsumerStatefulWidget {
   const AdvancedSettingsScreen({super.key});
@@ -11,6 +12,19 @@ class AdvancedSettingsScreen extends ConsumerStatefulWidget {
 
 class _AdvancedSettingsScreenState
     extends ConsumerState<AdvancedSettingsScreen> {
+  bool? isEnabled;
+
+  @override
+  void initState() {
+    _setTestScreenSetting();
+    super.initState();
+  }
+
+  void _setTestScreenSetting() async {
+    isEnabled = await isTestScreenOn();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,8 +42,15 @@ class _AdvancedSettingsScreenState
                 children: [
                   const Text('Show test screen'),
                   Checkbox(
-                    value: false,
-                    onChanged: (value) {},
+                    value: isEnabled ?? false,
+                    onChanged: (value) async {
+                      setState(() {
+                        if (value != null) {
+                          setTestScreenSetting(value);
+                          isEnabled = value;
+                        }
+                      });
+                    },
                   ),
                 ],
               ),

@@ -26,7 +26,7 @@ void callbackDispatcher() {
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance serviceInstance) {
-  Timer.periodic(Duration(minutes: 5), (timer) async {
+  Timer.periodic(const Duration(minutes: 5), (timer) async {
     await registerLocation();
   });
 }
