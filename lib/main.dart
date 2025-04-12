@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -77,7 +78,17 @@ class _MainAppState extends ConsumerState<MainApp> {
   Widget build(BuildContext context) {
     DateTime currentDateTime = ref.watch(selectedDateNotifierProvider);
 
+    final screenSize = MediaQuery.sizeOf(context);
+    final double width = screenSize.width;
+    final bool showVert = 1200 > screenSize.width;
+
     return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontSize: 80, fontWeight: FontWeight.bold),
+        ),
+      ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Overview'),
@@ -96,30 +107,60 @@ class _MainAppState extends ConsumerState<MainApp> {
             if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.hasData) {
               return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    FutureBuilder(
-                      future: ref
-                          .read(daysVisitedProvider.notifier)
-                          .loadDaysVisited(currentDateTime),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const SizedBox(
-                            height: 350,
-                            child: Center(
-                              child: CircularProgressIndicator(),
+                child: showVert
+                    ? Column(
+                        children: [
+                          FutureBuilder(
+                            future: ref
+                                .read(daysVisitedProvider.notifier)
+                                .loadDaysVisited(currentDateTime),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const SizedBox(
+                                  height: 350,
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                              return CalenderView(givenDate: currentDateTime);
+                            },
+                          ),
+                          const SizedBox(
+                              height: 20), // Correct for vertical spacing
+                          const CounterBarList(),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: FutureBuilder(
+                              future: ref
+                                  .read(daysVisitedProvider.notifier)
+                                  .loadDaysVisited(currentDateTime),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const SizedBox(
+                                    height: 350,
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+                                return CalenderView(givenDate: currentDateTime);
+                              },
                             ),
-                          );
-                        }
-
-                        return CalenderView(givenDate: currentDateTime);
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    const CounterBarList()
-                  ],
-                ),
+                          ),
+                          const SizedBox(width: 20),
+                          const Expanded(
+                            flex: 1,
+                            child: CounterBarList(),
+                          )
+                        ],
+                      ),
               );
             }
 

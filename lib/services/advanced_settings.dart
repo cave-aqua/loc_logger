@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:loc_logger/services/day_settings.dart';
 import 'package:loc_logger/services/init_database.dart';
 import 'package:sqflite/sqflite.dart';

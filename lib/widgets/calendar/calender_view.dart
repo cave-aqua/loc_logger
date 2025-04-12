@@ -29,6 +29,8 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.sizeOf(context);
+
     List<WeekView> weeks = buildCalenderMonth();
 
     return SingleChildScrollView(
