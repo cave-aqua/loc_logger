@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:loc_logger/models/settings/excluded_day.dart';
 import 'package:loc_logger/services/excluded_dates.dart';
@@ -119,6 +121,24 @@ class _ExcludedDateSettingScreeenState
                             horizontal: 80, vertical: 2),
                         icon: const Icon(Icons.save))
                   ],
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        await resetExcludedDates();
+                        setState(() {
+                          fromDate.clear();
+                          untilDate.clear();
+                        });
+                      },
+                      icon: const Icon(Icons.delete_outlined),
+                      label: const Text('Reset values'),
+                    ),
+                  ),
                 )
               ],
             );

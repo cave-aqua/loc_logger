@@ -103,6 +103,12 @@ class _LocationDetailWidgetState extends ConsumerState<LocationDetailWidget> {
                     flex: 9,
                     fit: FlexFit.tight,
                     child: IconButton(
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateColor.resolveWith(
+                                (states) => Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withOpacity(0.5))),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 40, vertical: 2),
                         onPressed: () async {
@@ -117,28 +123,38 @@ class _LocationDetailWidgetState extends ConsumerState<LocationDetailWidget> {
                         },
                         icon: const Icon(Icons.add_location)),
                   ),
+                  const SizedBox(
+                    width: 12,
+                  ),
                   Flexible(
-                      flex: 3,
-                      fit: FlexFit.tight,
-                      child: IconButton(
-                        icon: const Icon(Icons.gps_fixed),
-                        onPressed: () async {
-                          Position? pos = await getGlobalDeviceStatus();
-                          if (pos == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'Couldn\'t get location, check your settings')),
-                            );
-                            return;
-                          }
+                    flex: 3,
+                    fit: FlexFit.tight,
+                    child: IconButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateColor.resolveWith(
+                              (states) => Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.5))),
+                      icon: const Icon(Icons.gps_fixed),
+                      onPressed: () async {
+                        Position? pos = await getGlobalDeviceStatus();
+                        if (pos == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Couldn\'t get location, check your settings')),
+                          );
+                          return;
+                        }
 
-                          setState(() {
-                            widget.initialLocation.lat = pos.latitude;
-                            widget.initialLocation.long = pos.longitude;
-                          });
-                        },
-                      ))
+                        setState(() {
+                          widget.initialLocation.lat = pos.latitude;
+                          widget.initialLocation.long = pos.longitude;
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(

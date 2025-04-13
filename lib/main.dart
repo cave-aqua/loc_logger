@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -79,7 +78,6 @@ class _MainAppState extends ConsumerState<MainApp> {
     DateTime currentDateTime = ref.watch(selectedDateNotifierProvider);
 
     final screenSize = MediaQuery.sizeOf(context);
-    final double width = screenSize.width;
     final bool showVert = 1200 > screenSize.width;
 
     return MaterialApp(

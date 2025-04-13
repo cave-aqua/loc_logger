@@ -52,6 +52,30 @@ Future<ExcludedDateSettings> getExcludedDateSetting() async {
   return excludedDate;
 }
 
+Future<bool> resetExcludedDates() async {
+  Database db = await initDb();
+
+  Batch batch = db.batch();
+
+  batch.update(
+    EXCLUDED_DAYS_TABLE,
+    {'unix_time': null},
+    where: 'key = ?',
+    whereArgs: ['from'],
+  );
+
+  batch.update(
+    EXCLUDED_DAYS_TABLE,
+    {'unix_time': null},
+    where: 'key = ?',
+    whereArgs: ['until'],
+  );
+
+  await batch.commit();
+
+  return true;
+}
+
 Future<bool> isCurrentDateExcluded() async {
   ExcludedDateSettings excludedDateSettings = await getExcludedDateSetting();
   DateTime current = DateTime.now();
