@@ -7,13 +7,13 @@ class DayView extends StatelessWidget {
   final DateTime date;
   final List<VistedLocation>? visitedLocations;
   final Map<String, Location> locations;
+  final Map borderSettings;
 
-  const DayView(
-    this.date, {
-    super.key,
-    required this.locations,
-    this.visitedLocations,
-  });
+  const DayView(this.date,
+      {super.key,
+      required this.locations,
+      this.visitedLocations,
+      required this.borderSettings});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,22 @@ class DayView extends StatelessWidget {
         },
         child: Container(
           height: 35,
-          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          decoration: BoxDecoration(
+            border: Border(
+              top: borderSettings['isFirstWeek']
+                  ? const BorderSide(color: Colors.grey)
+                  : BorderSide.none,
+              bottom: borderSettings['isLastWeek']
+                  ? const BorderSide(color: Colors.grey)
+                  : BorderSide.none,
+              left: borderSettings['isFirstDay']
+                  ? const BorderSide(color: Colors.grey)
+                  : BorderSide.none,
+              right: borderSettings['isLastDay']
+                  ? const BorderSide(color: Colors.grey)
+                  : BorderSide.none,
+            ),
+          ),
           child: Stack(
             children: [
               Row(

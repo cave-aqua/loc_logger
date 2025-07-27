@@ -42,13 +42,14 @@ class DayVisitedLocationScreen extends StatelessWidget {
                 locations[vistedLocation.locationId]!.name,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(
-                width: 20,
-              ),
+              Expanded(child: Container()),
               Text(
                 vistedLocation.getFormattedDate()!,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
+              const SizedBox(
+                width: 20,
+              )
             ],
           );
         },

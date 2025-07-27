@@ -72,11 +72,35 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
     locations.forEach((e) => formattedVisitedLocations[e.id] = e);
 
     void addDayToPointer() {
+      Map borderSettings = {
+        'isFirstDay': false,
+        'isFirstWeek': false,
+        'isLastDay': false,
+        'isLastWeek': false,
+      };
+
+      if (firstDayOfTheMonth.difference(dayPointer).inDays < 7) {
+        borderSettings['isFirstWeek'] = true;
+      }
+
+      if (true) {
+        borderSettings['isFirstDay'] = true;
+      }
+
+      if (lastDayOfTheMonth.difference(dayPointer).inDays <= 6) {
+        borderSettings['isLastWeek'] = true;
+      }
+
+      if (dayPointer.day == lastDayOfTheMonth.day) {
+        borderSettings['isLastDay'] = true;
+      }
+
       daysOfTheMonth[weekCounter].add(
         DayView(
           dayPointer,
           locations: formattedVisitedLocations,
           visitedLocations: daysVisitedLocations['${dayPointer.day}'],
+          borderSettings: borderSettings,
         ),
       );
 
