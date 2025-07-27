@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:loc_logger/models/location.dart';
 import 'package:loc_logger/models/visited_location.dart';
+import 'package:loc_logger/screens/day_visited_location/day_visited_location.dart';
 
 class DayView extends StatelessWidget {
   final DateTime date;
   final List<VistedLocation>? visitedLocations;
-  final List<Location> locations;
+  final Map<String, Location> locations;
 
   const DayView(
     this.date, {
@@ -17,31 +18,44 @@ class DayView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Color> colors = [];
+    const snackBar =
+        SnackBar(content: Text('No visited dates available on date'));
 
     if (visitedLocations != null && locations.isNotEmpty) {
       for (var visitedLocation in visitedLocations!) {
-        Location location = locations.firstWhere(
-            (Location location) => location.id == visitedLocation.locationId);
-
-        colors.add(location.color);
+        colors.add(locations[visitedLocation.locationId]!.color);
       }
     }
 
     return Expanded(
-      child: Container(
-        height: 35,
-        decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-        child: Stack(
-          children: [
-            Row(
-              children: _buildBackground(colors),
-            ),
-            Center(
-              child: Text(
-                date.day.toString(),
+      child: InkWell(
+        onLongPress: () {
+          if (visitedLocations != null && visitedLocations!.isNotEmpty) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DayVisitedLocationScreen(
+                      date, visitedLocations, locations),
+                ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        child: Container(
+          height: 35,
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          child: Stack(
+            children: [
+              Row(
+                children: _buildBackground(colors),
               ),
-            ),
-          ],
+              Center(
+                child: Text(
+                  date.day.toString(),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

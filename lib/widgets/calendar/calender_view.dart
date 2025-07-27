@@ -29,8 +29,6 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.sizeOf(context);
-
     List<WeekView> weeks = buildCalenderMonth();
 
     return SingleChildScrollView(
@@ -70,11 +68,14 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
 
     List<WeekView> weeks = [];
 
+    Map<String, Location> formattedVisitedLocations = {};
+    locations.forEach((e) => formattedVisitedLocations[e.id] = e);
+
     void addDayToPointer() {
       daysOfTheMonth[weekCounter].add(
         DayView(
           dayPointer,
-          locations: locations,
+          locations: formattedVisitedLocations,
           visitedLocations: daysVisitedLocations['${dayPointer.day}'],
         ),
       );

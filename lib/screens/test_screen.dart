@@ -44,9 +44,7 @@ class _TestScreenState extends State<TestScreen> {
 
                   visitedLocations = snapshot.data;
 
-                  return SizedBox(
-                    height: 200,
-                    width: double.infinity,
+                  return Expanded(
                     child: ListView.builder(
                       itemCount: visitedLocations!.length,
                       itemBuilder: (context, index) {
@@ -79,7 +77,6 @@ class _TestScreenState extends State<TestScreen> {
                   final db = await initDb();
                   formattedVisitedLocations.clear();
                   db.rawDelete('DELETE FROM $VISISTED_LOCATION_TABLE');
-                  // db.rawDelete('DELETE FROM $LOCATIONS_TABLE');
                 },
                 child: const Text('Empty data'))
           ],
