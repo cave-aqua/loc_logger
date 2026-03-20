@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loc_logger/models/visited_location.dart';
 import 'package:loc_logger/services/init_database.dart';
+import 'package:loc_logger/services/visited_location.dart';
 
 class DaysVisitedNotitifer extends Notifier<Map<String, List<VistedLocation>>> {
   @override
@@ -42,6 +43,21 @@ class DaysVisitedNotitifer extends Notifier<Map<String, List<VistedLocation>>> {
     }
 
     state = formattedListedVisited;
+  }
+
+  Future<void> removeDay(int dayString, VistedLocation vistedLocation) {
+    final currentState = state;
+
+    final updatedList = (currentState[dayString.toString()] ?? [])
+        .where((element) => element.id != vistedLocation.id)
+        .toList();
+
+    state = {
+      ...currentState,
+      dayString.toString(): updatedList,
+    };
+
+    return removeVisitedLocation(vistedLocation);
   }
 
   void _emptyState() {

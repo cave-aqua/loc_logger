@@ -20,7 +20,7 @@ Future<Database> initDb() async {
           'CREATE TABLE IF NOT EXISTS $LOCATIONS_TABLE(id TEXT PRIMARY KEY, name TEXT, lat REAL, long REAL, color TEXT, is_home INTEGER)');
 
       await db.execute(
-        'CREATE TABLE IF NOT EXISTS $VISISTED_LOCATION_TABLE (id TEXT PRIMARY KEY, date_time TEXT NOT NULL, location_id TEXT NOT NULL, FOREIGN KEY (location_id) REFERENCES locations (id) ON DELETE CASCADE, UNIQUE (location_id, DATE(date_time))',
+        'CREATE TABLE IF NOT EXISTS $VISISTED_LOCATION_TABLE (id TEXT PRIMARY KEY, date_time TEXT NOT NULL, location_id TEXT NOT NULL, FOREIGN KEY (location_id) REFERENCES locations (id) ON DELETE CASCADE)',
       );
 
       await db.execute(
@@ -63,4 +63,12 @@ Future<void> addDayRecords(Database db) async {
 Future<void> addExcludedDayRecords(Database db) async {
   await db.insert(EXCLUDED_DAYS_TABLE, {'key': 'from', 'unix_time': null});
   await db.insert(EXCLUDED_DAYS_TABLE, {'key': 'until', 'unix_time': null});
+}
+
+Future<void> dropAllTables(Database db) async {
+  await db.execute('DROP TABLE IF EXISTS $VISISTED_LOCATION_TABLE');
+  await db.execute('DROP TABLE IF EXISTS $LOCATIONS_TABLE');
+  await db.execute('DROP TABLE IF EXISTS $ACTIVE_DAYS_TABLE');
+  await db.execute('DROP TABLE IF EXISTS $EXCLUDED_DAYS_TABLE');
+  await db.execute('DROP TABLE IF EXISTS $ADVANCED_SETTINGS_TABLE');
 }

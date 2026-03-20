@@ -21,6 +21,15 @@ Future<int> addVisitedLocation(VistedLocation vistedLocation) async {
   return result;
 }
 
+Future<int> removeVisitedLocation(VistedLocation vistedLocation) async {
+  Database db = await initDb();
+
+  int result = await db.delete(VISISTED_LOCATION_TABLE,
+      where: 'id = ?', whereArgs: [vistedLocation.id]);
+
+  return result;
+}
+
 Future<List<VistedLocation>> getVisitedLocationsByLocationId() async {
   Database db = await initDb();
 

@@ -73,7 +73,7 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
 
     void addDayToPointer() {
       Map borderSettings = {
-        'isFirstDay': false,
+        'isFirstDay': true,
         'isFirstWeek': false,
         'isLastDay': false,
         'isLastWeek': false,
@@ -83,11 +83,7 @@ class _CalenderViewState extends ConsumerState<CalenderView> {
         borderSettings['isFirstWeek'] = true;
       }
 
-      if (true) {
-        borderSettings['isFirstDay'] = true;
-      }
-
-      if (lastDayOfTheMonth.difference(dayPointer).inDays <= 6) {
+      if (lastDayOfTheMonth.difference(dayPointer).inDays < 7) {
         borderSettings['isLastWeek'] = true;
       }
 
